@@ -46,8 +46,9 @@ export default function InscriptionPage() {
     setErrors(errs);
     if (Object.keys(errs).length) return;
     setLoading(true);
+    let res: Response;
     try {
-      const res = await fetch("/api/register", {
+      res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -59,17 +60,27 @@ export default function InscriptionPage() {
           newsletter,
         }),
       });
-      const json = await res.json();
-      if (!res.ok || !json.ok) {
-        toast(json.error ?? "Inscription impossible.", { variant: "error" });
-        setLoading(false);
-        return;
-      }
-      router.push("/map");
     } catch {
       toast("Erreur réseau, réessaie.", { variant: "error" });
       setLoading(false);
+      return;
     }
+
+    let json: { ok?: boolean; error?: string; field?: keyof FieldErrors } = {};
+    try {
+      json = await res.json();
+    } catch {
+      // Réponse non-JSON (typiquement page d'erreur HTML d'un 500 non catché côté serveur).
+    }
+
+    if (!res.ok || !json.ok) {
+      const msg = json.error ?? `Inscription impossible (${res.status}).`;
+      if (json.field) setErrors((prev) => ({ ...prev, [json.field!]: msg }));
+      toast(msg, { variant: "error" });
+      setLoading(false);
+      return;
+    }
+    router.push("/map");
   }
 
   return (
