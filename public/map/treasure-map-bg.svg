@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Carte au trésor parchemin">
+  <defs>
+    <!-- Dégradé parchemin -->
+    <radialGradient id="parchment" cx="50%" cy="45%" r="80%">
+      <stop offset="0%" stop-color="#fbeccb" />
+      <stop offset="55%" stop-color="#f0dba3" />
+      <stop offset="100%" stop-color="#c9a876" />
+    </radialGradient>
+
+    <!-- Dégradé mer -->
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b8c9a8" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#7f9a7a" stop-opacity="0.35" />
+    </linearGradient>
+
+    <linearGradient id="sand" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d8b776" />
+      <stop offset="100%" stop-color="#b08a4b" />
+    </linearGradient>
+
+    <!-- Texture bruit parchemin -->
+    <filter id="paperNoise" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" />
+      <feColorMatrix values="0 0 0 0 0.22 0 0 0 0 0.14 0 0 0 0 0.07 0 0 0 0.35 0" />
+      <feComposite in2="SourceGraphic" operator="in" />
+    </filter>
+
+    <!-- Filtre bord brûlé -->
+    <filter id="burn" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" seed="3" />
+      <feDisplacementMap in="SourceGraphic" scale="14" />
+    </filter>
+
+    <!-- Ombre chaude -->
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" />
+      <feColorMatrix values="0 0 0 0 0.22 0 0 0 0 0.14 0 0 0 0 0.07 0 0 0 0.4 0" />
+    </filter>
+
+    <!-- Pattern vaguelettes -->
+    <pattern id="waves" x="0" y="0" width="60" height="20" patternUnits="userSpaceOnUse">
+      <path d="M0 10 q15 -10 30 0 t30 0" fill="none" stroke="#3a2818" stroke-width="0.8" stroke-opacity="0.25" />
+    </pattern>
+  </defs>
+
+  <!-- Fond parchemin -->
+  <rect x="0" y="0" width="1200" height="800" fill="url(#parchment)" />
+
+  <!-- Bords brûlés : cadre intérieur -->
+  <rect x="18" y="18" width="1164" height="764" fill="none" stroke="#6b3e1a" stroke-width="3" stroke-opacity="0.75" filter="url(#burn)" />
+  <rect x="38" y="38" width="1124" height="724" fill="none" stroke="#3a2818" stroke-width="1.2" stroke-opacity="0.55" />
+
+  <!-- Ombrage des coins -->
+  <g opacity="0.5">
+    <radialGradient id="cornerShade" cx="0" cy="0" r="1">
+      <stop offset="0%" stop-color="#3a2818" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#3a2818" stop-opacity="0" />
+    </radialGradient>
+    <rect x="0" y="0" width="300" height="300" fill="url(#cornerShade)" />
+    <g transform="translate(1200,0) scale(-1,1)">
+      <rect x="0" y="0" width="300" height="300" fill="url(#cornerShade)" />
+    </g>
+    <g transform="translate(0,800) scale(1,-1)">
+      <rect x="0" y="0" width="300" height="300" fill="url(#cornerShade)" />
+    </g>
+    <g transform="translate(1200,800) scale(-1,-1)">
+      <rect x="0" y="0" width="300" height="300" fill="url(#cornerShade)" />
+    </g>
+  </g>
+
+  <!-- MER : bande océan couvrant l'essentiel -->
+  <rect x="60" y="60" width="1080" height="680" fill="url(#sea)" opacity="0.25" />
+  <!-- Vaguelettes -->
+  <rect x="60" y="60" width="1080" height="680" fill="url(#waves)" />
+
+  <!-- ÎLES : formes organiques -->
+  <!-- Île principale centrale (grande, forme de tortue) -->
+  <g filter="url(#softShadow)">
+    <path d="M 680 280
+             C 820 260, 940 310, 960 420
+             C 980 540, 900 620, 760 630
+             C 640 640, 520 600, 460 520
+             C 410 460, 440 360, 520 310
+             C 580 275, 640 270, 680 280 Z"
+          fill="url(#sand)" stroke="#6b3e1a" stroke-width="2" stroke-opacity="0.6" />
+  </g>
+
+  <!-- Montagne centrale -->
+  <g opacity="0.7">
+    <polygon points="680,380 740,460 620,460" fill="#8b6a3d" stroke="#3a2818" stroke-width="1.2" />
+    <polygon points="680,380 720,420 700,420 700,450 660,450 660,420 640,420" fill="#6b4e24" opacity="0.6" />
+    <polygon points="760,420 800,480 720,480" fill="#8b6a3d" stroke="#3a2818" stroke-width="1.2" />
+  </g>
+
+  <!-- Petits palmiers (glyphes) -->
+  <g stroke="#3a2818" stroke-width="1.2" fill="none" opacity="0.75">
+    <g transform="translate(560 520)">
+      <path d="M0 0 q-4 -20 -2 -32" />
+      <path d="M-2 -32 q-12 -4 -22 0" />
+      <path d="M-2 -32 q12 -4 22 0" />
+      <path d="M-2 -32 q-4 -10 -12 -14" />
+      <path d="M-2 -32 q4 -10 12 -14" />
+    </g>
+    <g transform="translate(860 500)">
+      <path d="M0 0 q-4 -20 -2 -32" />
+      <path d="M-2 -32 q-12 -4 -22 0" />
+      <path d="M-2 -32 q12 -4 22 0" />
+      <path d="M-2 -32 q-4 -10 -12 -14" />
+      <path d="M-2 -32 q4 -10 12 -14" />
+    </g>
+  </g>
+
+  <!-- Petite île nord-ouest -->
+  <g filter="url(#softShadow)">
+    <path d="M 160 280
+             C 240 260, 310 290, 320 340
+             C 325 390, 270 420, 200 410
+             C 140 400, 110 350, 130 310
+             C 140 290, 150 285, 160 280 Z"
+          fill="url(#sand)" stroke="#6b3e1a" stroke-width="2" stroke-opacity="0.6" />
+  </g>
+
+  <!-- Île sud-ouest -->
+  <g filter="url(#softShadow)">
+    <path d="M 110 600
+             C 220 570, 360 590, 410 640
+             C 440 680, 360 720, 240 720
+             C 140 720, 70 680, 90 640
+             C 95 620, 100 610, 110 600 Z"
+          fill="url(#sand)" stroke="#6b3e1a" stroke-width="2" stroke-opacity="0.6" />
+  </g>
+
+  <!-- Île sud-est -->
+  <g filter="url(#softShadow)">
+    <path d="M 820 640
+             C 920 620, 1030 640, 1080 680
+             C 1100 710, 1050 740, 960 740
+             C 880 740, 810 720, 790 690
+             C 790 670, 800 650, 820 640 Z"
+          fill="url(#sand)" stroke="#6b3e1a" stroke-width="2" stroke-opacity="0.6" />
+  </g>
+
+  <!-- Île nord-est -->
+  <g filter="url(#softShadow)">
+    <path d="M 920 140
+             C 1020 130, 1110 160, 1120 220
+             C 1120 280, 1040 310, 960 300
+             C 880 290, 830 250, 840 200
+             C 855 170, 890 145, 920 140 Z"
+          fill="url(#sand)" stroke="#6b3e1a" stroke-width="2" stroke-opacity="0.6" />
+  </g>
+
+  <!-- Bateau stylisé -->
+  <g transform="translate(900 500)" opacity="0.8">
+    <path d="M-22 0 L22 0 L16 10 L-16 10 Z" fill="#3a2818" />
+    <rect x="-1" y="-22" width="2" height="22" fill="#3a2818" />
+    <path d="M0 -22 L12 -8 L0 -8 Z" fill="#c0392b" />
+  </g>
+
+  <!-- Monstre marin stylisé -->
+  <g transform="translate(240 500)" opacity="0.55" stroke="#3a2818" stroke-width="1.4" fill="none">
+    <path d="M0 0 q10 -16 24 -4 t24 -4 t24 -4" />
+    <circle cx="-4" cy="-2" r="2" fill="#3a2818" />
+  </g>
+
+  <!-- ROSE DES VENTS / COMPASS en haut à droite -->
+  <g transform="translate(1020 130)">
+    <circle r="74" fill="#f5e6c8" stroke="#3a2818" stroke-width="2" opacity="0.95" />
+    <circle r="64" fill="none" stroke="#6b3e1a" stroke-width="1" stroke-dasharray="4 4" />
+    <!-- Branches principales -->
+    <g>
+      <polygon points="0,-64 6,0 0,4 -6,0" fill="#c0392b" stroke="#3a2818" stroke-width="1.2" />
+      <polygon points="0,64 -6,0 0,-4 6,0" fill="#3a2818" />
+      <polygon points="-64,0 0,-6 4,0 0,6" fill="#3a2818" />
+      <polygon points="64,0 0,6 -4,0 0,-6" fill="#d4af37" stroke="#3a2818" stroke-width="1.2" />
+    </g>
+    <!-- Branches diagonales -->
+    <g opacity="0.75">
+      <polygon points="45,-45 2,-2 -2,2 -45,45" fill="#8b6a3d" />
+      <polygon points="-45,-45 -2,-2 2,2 45,45" fill="#8b6a3d" />
+    </g>
+    <circle r="6" fill="#d4af37" stroke="#3a2818" stroke-width="1.2" />
+    <!-- Lettres cardinales -->
+    <g font-family="Georgia, serif" font-size="14" font-weight="700" fill="#3a2818" text-anchor="middle">
+      <text x="0" y="-78">N</text>
+      <text x="0" y="90">S</text>
+      <text x="-82" y="5">O</text>
+      <text x="82" y="5">E</text>
+    </g>
+  </g>
+
+  <!-- Chemin trace pointillée décoratif (fond) -->
+  <path d="M 180 630 Q 300 560 420 600 T 660 520 T 900 470 T 1050 340 T 800 200 T 450 240 T 260 320"
+        fill="none" stroke="#6b3e1a" stroke-width="2.2" stroke-dasharray="3 7"
+        stroke-linecap="round" opacity="0.35" />
+
+  <!-- Crâne et os stylisés (décor) -->
+  <g transform="translate(180 160)" opacity="0.75">
+    <ellipse cx="0" cy="0" rx="22" ry="20" fill="#f5e6c8" stroke="#3a2818" stroke-width="1.5" />
+    <circle cx="-7" cy="-2" r="3.5" fill="#3a2818" />
+    <circle cx="7" cy="-2" r="3.5" fill="#3a2818" />
+    <rect x="-2" y="6" width="4" height="6" fill="#3a2818" />
+    <g transform="rotate(30)">
+      <rect x="-38" y="24" width="70" height="4" rx="2" fill="#f5e6c8" stroke="#3a2818" stroke-width="1.2" />
+    </g>
+    <g transform="rotate(-30)">
+      <rect x="-38" y="24" width="70" height="4" rx="2" fill="#f5e6c8" stroke="#3a2818" stroke-width="1.2" />
+    </g>
+  </g>
+
+  <!-- Titre sur la carte -->
+  <g transform="translate(600 90)" text-anchor="middle">
+    <text font-family="Georgia, serif" font-size="30" font-weight="700" fill="#3a2818" letter-spacing="4">
+      CHASSE AU TRÉSOR
+    </text>
+    <text y="32" font-family="Georgia, serif" font-size="16" font-weight="600" fill="#8b2a1c" letter-spacing="8">
+      ★ PAF 2K26 — PLAY AZURE FESTIVAL ★
+    </text>
+  </g>
+
+  <!-- Texture parchemin par-dessus (léger bruit sombre) -->
+  <rect x="0" y="0" width="1200" height="800" fill="#3a2818" opacity="0.06" filter="url(#paperNoise)" />
+
+  <!-- Vignette douce -->
+  <radialGradient id="vignette" cx="50%" cy="50%" r="80%">
+    <stop offset="70%" stop-color="#000" stop-opacity="0" />
+    <stop offset="100%" stop-color="#3a2818" stop-opacity="0.45" />
+  </radialGradient>
+  <rect x="0" y="0" width="1200" height="800" fill="url(#vignette)" pointer-events="none" />
+</svg>
