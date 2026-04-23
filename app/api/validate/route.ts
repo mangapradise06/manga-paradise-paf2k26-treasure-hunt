@@ -64,9 +64,20 @@ export async function POST(req: Request) {
   const attempts = await incrementAttempts(sess.participantId, standId);
 
   if (!ok) {
+    // Détection : l'utilisateur a-t-il tapé un seul mot alors que le
+    // nom complet du personnage en contient plusieurs ? Si oui, on renvoie
+    // un flag hint_full_name qui déclenchera côté front un message
+    // spécifique "prénom + nom complet".
+    const expectedParts = (next.character_name ?? "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    const answerParts = answer.trim().split(/\s+/).filter(Boolean);
+    const hintFullName = expectedParts.length >= 2 && answerParts.length < 2;
     return NextResponse.json({
       ok: false,
       attempts,
+      hint_full_name: hintFullName,
       error: "Réponse incorrecte. Relis bien les indices !",
     });
   }

@@ -1,6 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Compass, MapPinned, Trophy, ChevronRight } from "lucide-react";
 import { MangaParadiseBackdrop } from "@/components/MangaParadiseBackdrop";
+import { Logo } from "@/components/Logo";
 import { ToriiIcon } from "@/components/icons/ToriiIcon";
 import { Sakura } from "@/components/icons/Sakura";
 import { Clouds } from "@/components/icons/Clouds";
@@ -8,12 +10,25 @@ import { Clouds } from "@/components/icons/Clouds";
 export default function LandingPage() {
   return (
     <main className="relative">
+      {/* ===== BANNIÈRE HORIZONTALE (logo officiel) ===== */}
+      <div className="relative w-full">
+        <Image
+          src="/brand/banner-manga-paradise.webp"
+          alt="Manga Paradise — L'appli des passionnés de pop culture japonaise"
+          width={4249}
+          height={1080}
+          className="h-auto w-full"
+          priority
+          sizes="100vw"
+        />
+      </div>
+
       {/* ===== HERO ===== */}
       <MangaParadiseBackdrop variant="hero" height="64vh" withClouds withSakura>
         <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center px-5 pb-24 pt-10 text-center sm:pt-14">
           <div className="mb-5 flex flex-col items-center gap-3">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/95 shadow-mp-strong">
-              <ToriiIcon size={48} color="#DC1E44" />
+            <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-white/95 shadow-mp-strong">
+              <Logo size={80} alt="Manga Paradise" />
             </div>
             <span className="inline-flex items-center gap-1 rounded-full border border-white/40 bg-white/25 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white backdrop-blur-sm">
               Play Azure Festival 2026 · Nice

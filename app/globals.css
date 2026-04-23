@@ -188,3 +188,15 @@ body {
   font-weight: 800;
   padding: 0 0.05em;
 }
+
+/* === Fond carte : motif sakura subtil en watermark ===
+   Pattern SVG inline (data URI), encodé URL-friendly.
+   IMPORTANT : `background-attachment: local` (pas `fixed`) pour la perf mobile iOS. */
+.map-bg {
+  background-color: #F8FBFF;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><g opacity='0.14'><g transform='translate(30 35) rotate(15)' fill='%23FDD0E0'><path d='M0 0 C-4 -10 -4 -17 0 -22 C4 -17 4 -10 0 0 Z'/><path d='M0 0 C-4 -10 -4 -17 0 -22 C4 -17 4 -10 0 0 Z' transform='rotate(72)'/><path d='M0 0 C-4 -10 -4 -17 0 -22 C4 -17 4 -10 0 0 Z' transform='rotate(144)'/><path d='M0 0 C-4 -10 -4 -17 0 -22 C4 -17 4 -10 0 0 Z' transform='rotate(216)'/><path d='M0 0 C-4 -10 -4 -17 0 -22 C4 -17 4 -10 0 0 Z' transform='rotate(288)'/><circle r='3' fill='%23F48BB2'/></g><g transform='translate(125 100) rotate(-22) scale(0.7)' fill='%23FDD0E0'><path d='M0 0 C-4 -10 -4 -17 0 -22 C4 -17 4 -10 0 0 Z'/><path d='M0 0 C-4 -10 -4 -17 0 -22 C4 -17 4 -10 0 0 Z' transform='rotate(72)'/><path d='M0 0 C-4 -10 -4 -17 0 -22 C4 -17 4 -10 0 0 Z' transform='rotate(144)'/><path d='M0 0 C-4 -10 -4 -17 0 -22 C4 -17 4 -10 0 0 Z' transform='rotate(216)'/><path d='M0 0 C-4 -10 -4 -17 0 -22 C4 -17 4 -10 0 0 Z' transform='rotate(288)'/><circle r='3' fill='%23F48BB2'/></g><g transform='translate(70 145) rotate(45) scale(0.55)' fill='%23FDD0E0'><path d='M0 0 C-4 -10 -4 -17 0 -22 C4 -17 4 -10 0 0 Z'/><path d='M0 0 C-4 -10 -4 -17 0 -22 C4 -17 4 -10 0 0 Z' transform='rotate(72)'/><path d='M0 0 C-4 -10 -4 -17 0 -22 C4 -17 4 -10 0 0 Z' transform='rotate(144)'/><path d='M0 0 C-4 -10 -4 -17 0 -22 C4 -17 4 -10 0 0 Z' transform='rotate(216)'/><path d='M0 0 C-4 -10 -4 -17 0 -22 C4 -17 4 -10 0 0 Z' transform='rotate(288)'/><circle r='3' fill='%23F48BB2'/></g></g></svg>");
+  background-size: 180px 180px;
+  background-attachment: local;
+  background-repeat: repeat;
+}
+

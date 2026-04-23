@@ -21,8 +21,8 @@ import {
   Trophy,
 } from "lucide-react";
 import clsx from "clsx";
-import { Sakura } from "./icons/Sakura";
 import { ToriiIcon } from "./icons/ToriiIcon";
+import { Logo } from "./Logo";
 
 interface StandLite {
   id: number;
@@ -40,6 +40,8 @@ interface Props {
 }
 
 type Status = "done" | "active" | "locked";
+
+type StepAction = (standId: number, status: Status) => void;
 
 const MINUTES_PER_STAND = 1.5;
 const SCROLL_KEY = "mp-trail-scroll-y";
@@ -77,6 +79,18 @@ export function TreasureTrail({
     ? ordered.findIndex((s) => s.id === nextStandId)
     : -1;
 
+  const router = useRouter();
+  const handleStepClick: StepAction = (standId, status) => {
+    if (status === "locked") return;
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem(
+        SCROLL_KEY,
+        `${window.scrollY}:${nextStandId ?? ""}`
+      );
+    }
+    router.push(`/map/${standId}`);
+  };
+
   return (
     <>
       <StickyHeader
@@ -86,6 +100,10 @@ export function TreasureTrail({
         etaMinutes={etaMinutes}
         activeIndex={activeIndex}
         allDone={allDone}
+        ordered={ordered}
+        completed={completed}
+        nextStandId={nextStandId}
+        onStepClick={handleStepClick}
       />
       <Legend />
       <TrailContainer
@@ -105,7 +123,7 @@ export function TrailSkeleton() {
   return (
     <>
       <div
-        className="sticky top-0 z-40 border-b border-mp-sky/30 bg-white/80 backdrop-blur-md"
+        className="sticky top-0 z-40 border-b border-mp-sky/30 bg-white/95"
         style={{
           paddingTop: `calc(0.75rem + env(safe-area-inset-top))`,
           paddingBottom: "0.75rem",
@@ -169,6 +187,10 @@ function StickyHeader({
   etaMinutes,
   activeIndex,
   allDone,
+  ordered,
+  completed,
+  nextStandId,
+  onStepClick,
 }: {
   pseudo: string;
   doneCount: number;
@@ -176,6 +198,10 @@ function StickyHeader({
   etaMinutes: number;
   activeIndex: number;
   allDone: boolean;
+  ordered: StandLite[];
+  completed: Set<number>;
+  nextStandId: number | null;
+  onStepClick: StepAction;
 }) {
   const { scrollY } = useScroll();
   const [compact, setCompact] = useState(false);
@@ -188,7 +214,7 @@ function StickyHeader({
   return (
     <header
       className={clsx(
-        "sticky top-0 z-40 border-b-2 border-mp-red/20 bg-white/90 backdrop-blur-md transition-[padding] duration-200 ease-out",
+        "sticky top-0 z-40 border-b-2 border-mp-red/20 bg-white/95",
         compact ? "pb-2" : "pb-3"
       )}
       style={{
@@ -202,22 +228,39 @@ function StickyHeader({
           </p>
         )}
         <div className="flex items-baseline justify-between gap-3">
-          <h1
-            className={clsx(
-              "font-display italic text-mp-red transition-[font-size] duration-200",
-              compact ? "text-lg leading-tight" : "text-2xl leading-tight sm:text-3xl"
-            )}
-          >
-            Ta progression
-          </h1>
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div
+              className={clsx(
+                "flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-white shadow-mp",
+                compact ? "h-7 w-7" : "h-9 w-9"
+              )}
+              aria-hidden
+            >
+              <Logo size={compact ? 28 : 36} alt="Manga Paradise" />
+            </div>
+            <h1
+              className={clsx(
+                "font-display italic text-mp-red truncate",
+                compact
+                  ? "text-lg leading-tight"
+                  : "text-2xl leading-tight sm:text-3xl"
+              )}
+            >
+              Ta progression
+            </h1>
+          </div>
           <span className="shrink-0 rounded-full bg-mp-red px-3 py-1 font-display text-sm font-bold text-white shadow-mp">
             {doneCount}/{total}
           </span>
         </div>
         <SegmentedProgress
+          ordered={ordered}
+          completed={completed}
+          nextStandId={nextStandId}
           doneCount={doneCount}
           total={total}
           activeIndex={activeIndex}
+          onStepClick={onStepClick}
           className="mt-2"
         />
         {!compact && (
@@ -236,17 +279,24 @@ function StickyHeader({
 }
 
 function SegmentedProgress({
+  ordered,
+  completed,
+  nextStandId,
   doneCount,
   total,
   activeIndex,
+  onStepClick,
   className,
 }: {
+  ordered: StandLite[];
+  completed: Set<number>;
+  nextStandId: number | null;
   doneCount: number;
   total: number;
   activeIndex: number;
+  onStepClick: StepAction;
   className?: string;
 }) {
-  const reducedMotion = useReducedMotion();
   return (
     <div
       className={clsx("flex items-center gap-1.5", className)}
@@ -257,26 +307,55 @@ function SegmentedProgress({
       aria-label={`Progression : ${doneCount} sur ${total} étapes validées`}
     >
       <div className="flex flex-1 items-center gap-1">
-        {Array.from({ length: total }).map((_, i) => {
-          const isDone = i < doneCount;
-          const isActive = i === activeIndex;
+        {ordered.map((stand, i) => {
+          const status = statusOf(stand, completed, nextStandId);
+          const isDone = status === "done";
+          const isActive = status === "active";
+          const isLocked = status === "locked";
+          const label =
+            isDone
+              ? `Étape ${i + 1} — terminée`
+              : isActive
+                ? `Étape ${i + 1} — en cours`
+                : `Étape ${i + 1} — verrouillée`;
           return (
-            <span
-              key={i}
+            <button
+              key={stand.id}
+              type="button"
+              onClick={() => onStepClick(stand.id, status)}
+              disabled={isLocked}
+              aria-disabled={isLocked}
+              aria-label={label}
+              title={label}
               className={clsx(
-                "h-1.5 flex-1 rounded-full transition-colors duration-300 ease-out",
-                isDone
-                  ? "bg-gradient-to-r from-mp-coral to-mp-orange"
-                  : isActive
-                    ? "bg-mp-red/20"
-                    : "bg-mp-sky/40",
-                isActive && !reducedMotion && "motion-safe:animate-pulse"
+                "group relative h-3 flex-1 rounded-full",
+                isLocked
+                  ? "cursor-not-allowed"
+                  : "cursor-pointer"
               )}
-              aria-hidden
-            />
+              tabIndex={isLocked ? -1 : 0}
+            >
+              <span
+                className={clsx(
+                  "pointer-events-none absolute inset-x-0 top-1/2 block h-1.5 -translate-y-1/2 rounded-full transition-colors",
+                  isDone
+                    ? "bg-gradient-to-r from-mp-coral to-mp-orange"
+                    : isActive
+                      ? "bg-mp-red/30"
+                      : "bg-mp-sky/40",
+                  isActive && "ring-2 ring-mp-red ring-offset-1 ring-offset-white"
+                )}
+                aria-hidden
+              />
+            </button>
           );
         })}
       </div>
+      {activeIndex >= 0 && (
+        <span className="sr-only">
+          Étape actuelle : {activeIndex + 1} sur {total}
+        </span>
+      )}
     </div>
   );
 }
@@ -573,7 +652,7 @@ function StationCircle({
         {!reducedMotion && (
           <>
             <span
-              className="pointer-events-none absolute inset-0 -z-10 animate-pulse-ring rounded-full bg-mp-coral/30"
+              className="pointer-events-none absolute inset-0 -z-10 hidden rounded-full bg-mp-coral/30 motion-safe:animate-pulse-ring md:block"
               aria-hidden
             />
             <span
@@ -730,9 +809,7 @@ function TrophyFooter({
         <Trophy
           className={clsx(
             "h-10 w-10",
-            allDone
-              ? "text-mp-red motion-safe:animate-pulse"
-              : "text-mp-ink-soft/70"
+            allDone ? "text-mp-red" : "text-mp-ink-soft/70"
           )}
           strokeWidth={2}
           aria-hidden
@@ -786,17 +863,24 @@ function TrailDecor() {
       {/* Sun-burst subtil au top */}
       <div
         className="sunburst-bg-soft pointer-events-none absolute left-0 right-0 top-0 h-[180px] opacity-70"
-        style={{ maskImage: "linear-gradient(to bottom, black, transparent)", WebkitMaskImage: "linear-gradient(to bottom, black, transparent)" }}
+        style={{
+          maskImage: "linear-gradient(to bottom, black, transparent)",
+          WebkitMaskImage: "linear-gradient(to bottom, black, transparent)",
+        }}
       />
-      {/* Pétales sakura éparpillés */}
-      <Sakura className="absolute top-[10%] left-[4%] animate-float-slow opacity-70" size={28} />
-      <Sakura className="absolute top-[26%] right-[5%] animate-float-slow opacity-60" size={22} style={{ animationDelay: "0.8s" }} />
-      <Sakura className="absolute top-[48%] left-[6%] animate-float-slow opacity-65" size={30} style={{ animationDelay: "1.6s" }} />
-      <Sakura className="absolute top-[68%] right-[4%] animate-float-slow opacity-55" size={24} style={{ animationDelay: "2.1s" }} />
-      <Sakura className="absolute top-[84%] left-[5%] animate-float-slow opacity-60" size={26} style={{ animationDelay: "0.4s" }} />
-      {/* Torii discrets */}
-      <ToriiIcon className="absolute top-[36%] right-[8%] opacity-15" size={56} color="#DC1E44" />
-      <ToriiIcon className="absolute top-[76%] left-[8%] opacity-15" size={48} color="#DC1E44" />
+      {/* Torii discrets (monochrome, statiques) —
+          les pétales sakura animées ont été retirées pour la perf au scroll,
+          le motif sakura est maintenant géré par .map-bg (SVG data-uri statique). */}
+      <ToriiIcon
+        className="absolute top-[36%] right-[8%] opacity-[0.12]"
+        size={56}
+        color="#DC1E44"
+      />
+      <ToriiIcon
+        className="absolute top-[76%] left-[8%] opacity-[0.12]"
+        size={48}
+        color="#DC1E44"
+      />
     </div>
   );
 }

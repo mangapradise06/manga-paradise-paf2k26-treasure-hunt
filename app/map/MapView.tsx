@@ -107,7 +107,7 @@ export default function MapView({ children }: { children?: React.ReactNode }) {
 
   if (!me) {
     return (
-      <main>
+      <main className="map-bg">
         <TrailSkeleton />
       </main>
     );
@@ -117,7 +117,7 @@ export default function MapView({ children }: { children?: React.ReactNode }) {
   const canReset = me.participant.reset_used === false;
 
   return (
-    <main>
+    <main className="map-bg">
       <TreasureTrail
         pseudo={me.participant.pseudo || me.participant.first_name}
         stands={me.stands}

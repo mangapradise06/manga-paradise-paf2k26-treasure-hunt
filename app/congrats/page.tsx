@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ShareButtons } from "@/components/ShareButtons";
 import { Sparkles } from "lucide-react";
-import { ToriiIcon } from "@/components/icons/ToriiIcon";
+import { Logo } from "@/components/Logo";
 import { Sakura } from "@/components/icons/Sakura";
 import { Clouds } from "@/components/icons/Clouds";
 
@@ -69,8 +69,8 @@ export default function CongratsPage() {
         />
 
         <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center gap-4 px-5 text-center">
-          <div className="mb-2 flex h-24 w-24 items-center justify-center rounded-full bg-white/90 shadow-mp-strong motion-safe:animate-torii-bounce">
-            <ToriiIcon className="h-14 w-14 text-mp-red" aria-hidden />
+          <div className="mb-2 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-white/90 shadow-mp-strong motion-safe:animate-torii-bounce">
+            <Logo size={96} alt="Manga Paradise" priority />
           </div>
 
           <h1 className="font-display italic text-4xl leading-none text-white sm:text-6xl mp-title-outline">

@@ -50,5 +50,9 @@ export async function GET(
     map_x: stand.map_x,
     map_y: stand.map_y,
     already,
+    // En mode review, on révèle le nom du personnage et l'anime associé.
+    // Sinon, on les masque (anti-triche : l'indice doit suffire).
+    character_name: already ? stand.character_name : null,
+    anime_name: already ? stand.anime_name : null,
   });
 }

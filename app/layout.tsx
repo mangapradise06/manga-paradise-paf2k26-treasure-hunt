@@ -30,8 +30,11 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
   },
   icons: {
-    icon: "/icons/icon-192.png",
-    apple: "/icons/icon-192.png",
+    icon: [
+      { url: "/brand/logo-manga-paradise.webp", type: "image/webp" },
+      { url: "/brand/logo-manga-paradise.jpg", type: "image/jpeg" },
+    ],
+    apple: "/brand/logo-manga-paradise.jpg",
   },
 };
 

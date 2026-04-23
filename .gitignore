@@ -37,3 +37,4 @@ public/worker-*.js.map
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.vercel

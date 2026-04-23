@@ -153,19 +153,41 @@ export default function OnboardingPage() {
         >
           <ol className="mt-2 space-y-2">
             {[
-              "Lis l'énigme de l'étape en cours.",
-              "Trouve le stand qu'elle décrit. Pas de panique, il est forcément sur le site !",
-              "Trouve quel personnage d'anime est associé à ce stand (parfois c'est écrit, parfois il faut demander aux bénévoles).",
-              "Reviens dans l'app, tape le nom du personnage, et passe à l'étape suivante.",
-              "Répète 10 fois pour débloquer la dernière épreuve.",
-            ].map((txt, i) => (
+              <>Lis attentivement l&apos;énigme de l&apos;étape en cours.</>,
+              <>
+                Essaie de deviner de quel stand on parle grâce aux indices
+                qui apparaissent en dessous. Si tu ne trouves pas,
+                n&apos;hésite pas à revenir sur le stand Manga Paradise :
+                on est là pour t&apos;aider.
+              </>,
+              <>
+                Une fois sur le bon stand, trouve le personnage d&apos;anime
+                qui lui est associé.{" "}
+                <em>
+                  (N&apos;hésite pas à demander à l&apos;exposant qui gère
+                  le stand de te montrer le personnage en question —
+                  c&apos;est fait pour.)
+                </em>
+              </>,
+              <>
+                Reviens dans l&apos;app, tape le{" "}
+                <strong>prénom + nom complet</strong> du personnage,
+                exactement comme l&apos;exposant te l&apos;a donné. Pas de
+                faute, sinon l&apos;app ne valide pas. Exemple : «&nbsp;Nagisa
+                Shiota&nbsp;» et pas juste «&nbsp;Nagisa&nbsp;».
+              </>,
+              <>
+                Répète ça 10 fois pour débloquer la dernière épreuve et
+                trouver le mot secret final.
+              </>,
+            ].map((node, i) => (
               <li key={i} className="flex items-start gap-2">
-                <Sakura size={18} className="mt-0.5 shrink-0" />
+                <Sakura size={16} className="mt-1 shrink-0" />
                 <span>
                   <span className="font-semibold text-mp-red">
                     {i + 1}.
                   </span>{" "}
-                  {txt}
+                  {node}
                 </span>
               </li>
             ))}
@@ -178,10 +200,40 @@ export default function OnboardingPage() {
           title="⚡ L'épreuve finale"
         >
           <p>
-            Quand tu auras trouvé les 10 personnages, tu devras reconstituer un
-            mot secret en associant chaque personnage à son rôle narratif. Le
-            personnage et son rôle t&apos;aideront à former un mot culte de la
-            pop culture japonaise.
+            Quand tu auras trouvé les 10 personnages, l&apos;app te
+            demandera d&apos;associer chaque personnage à son{" "}
+            <strong>rôle narratif</strong>.
+          </p>
+          <p className="mt-3">
+            Chaque personnage a un rôle que tu vas devoir retrouver.
+            Voici les 10 rôles que tu croiseras :
+          </p>
+          <ul className="mt-2 space-y-1.5">
+            {[
+              "Le stratège",
+              "L'assassin",
+              "Le sensei",
+              "La mort",
+              "Le carnivore",
+              "La hyène",
+              "L'alchimiste",
+              "L'orphelin",
+              "Le capitaine",
+              "La princesse",
+            ].map((r) => (
+              <li key={r} className="flex items-start gap-2">
+                <Sakura size={14} className="mt-1 shrink-0" />
+                <span>{r}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3">
+            Une fois que tu auras bien associé chaque personnage à son
+            rôle, prends la{" "}
+            <strong>première lettre de chaque personnage</strong> dans
+            l&apos;ordre donné : ça te révèle le nom d&apos;un anime culte.
+            Saisis ce nom d&apos;anime pour valider l&apos;épreuve et tu
+            seras inscrit au tirage.
           </p>
         </Section>
 
@@ -193,21 +245,20 @@ export default function OnboardingPage() {
           <ul className="mt-2 space-y-2">
             {[
               "Prends ton temps, la chasse dure toute la journée.",
-              "Tu peux suspendre et revenir plus tard, ta progression est sauvegardée.",
+              "Une seule participation par adresse email.",
               "Si tu es bloqué, un indice bonus apparaîtra après ton premier essai raté.",
+              "Tu peux suspendre et revenir plus tard, ta progression est sauvegardée.",
             ].map((txt, i) => (
               <li key={i} className="flex items-start gap-2">
-                <Sakura size={18} className="mt-0.5 shrink-0" />
-                <span>{txt}</span>
+                <Sakura size={16} className="mt-1 shrink-0" />
+                <span className="inline-flex items-center gap-1">
+                  {txt.startsWith("Une seule") && (
+                    <Mail className="h-3.5 w-3.5" aria-hidden />
+                  )}
+                  {txt}
+                </span>
               </li>
             ))}
-            <li className="flex items-start gap-2">
-              <Sakura size={18} className="mt-0.5 shrink-0" />
-              <span className="inline-flex items-center gap-1">
-                <Mail className="h-3.5 w-3.5" aria-hidden />
-                Une seule participation par email.
-              </span>
-            </li>
           </ul>
         </Section>
 
@@ -217,10 +268,13 @@ export default function OnboardingPage() {
           title="🎁 Les récompenses"
         >
           <p>
-            <span className="font-semibold">1er au scratch-test</span>{" "}
-            (rapidité sur le samedi) et{" "}
-            <span className="font-semibold">tirage au sort</span> parmi les
-            finishers : goodies, mangas, places VIP.
+            Une <strong>figurine TSUME officielle</strong> à gagner par{" "}
+            <strong>tirage au sort</strong> parmi tous les participants
+            qui termineront la chasse au trésor.
+          </p>
+          <p className="mt-3 text-mp-ink-soft">
+            (Ainsi que d&apos;autres goodies, mangas, et places VIP pour
+            les prochains événements.)
           </p>
         </Section>
       </div>
