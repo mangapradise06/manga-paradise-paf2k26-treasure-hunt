@@ -21,7 +21,6 @@ import {
   Trophy,
 } from "lucide-react";
 import clsx from "clsx";
-import { ToriiIcon } from "./icons/ToriiIcon";
 import { Logo } from "./Logo";
 
 interface StandLite {
@@ -859,27 +858,30 @@ function TrophyFooter({
 
 function TrailDecor() {
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-      {/* Sun-burst subtil au top */}
+    <div
+      className="pointer-events-none absolute inset-0 overflow-hidden"
+      aria-hidden
+    >
+      {/* Illustration de fond : carte trésor verticale Manga Paradise
+          Départ rouge en haut (torii) → arrivée livre doré tout en bas.
+          Tirée en cover pleine largeur, opacité réduite pour que les
+          cartes d'étape restent lisibles. */}
       <div
-        className="sunburst-bg-soft pointer-events-none absolute left-0 right-0 top-0 h-[180px] opacity-70"
+        className="absolute inset-0 opacity-[0.35]"
         style={{
-          maskImage: "linear-gradient(to bottom, black, transparent)",
-          WebkitMaskImage: "linear-gradient(to bottom, black, transparent)",
+          backgroundImage: "url('/map/treasure-map-bg.webp')",
+          backgroundSize: "100% auto",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "top center",
         }}
       />
-      {/* Torii discrets (monochrome, statiques) —
-          les pétales sakura animées ont été retirées pour la perf au scroll,
-          le motif sakura est maintenant géré par .map-bg (SVG data-uri statique). */}
-      <ToriiIcon
-        className="absolute top-[36%] right-[8%] opacity-[0.12]"
-        size={56}
-        color="#DC1E44"
-      />
-      <ToriiIcon
-        className="absolute top-[76%] left-[8%] opacity-[0.12]"
-        size={48}
-        color="#DC1E44"
+      {/* Voile blanc dégradé pour apaiser la lisibilité sur mobile */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(248,251,255,0.55) 0%, rgba(248,251,255,0.35) 20%, rgba(248,251,255,0.35) 80%, rgba(248,251,255,0.55) 100%)",
+        }}
       />
     </div>
   );
