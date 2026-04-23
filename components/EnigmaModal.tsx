@@ -7,6 +7,7 @@ import { Dialog } from "./ui/Dialog";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { useToast } from "./Toast";
+import { StuckHint } from "./StuckHint";
 import {
   CheckCircle2,
   ChevronLeft,
@@ -170,7 +171,7 @@ export function EnigmaModal({
           ? undefined
           : isReview
             ? "Étape déjà validée — tu peux relire l'énigme et les indices."
-            : "Décrypte les indices pour recruter le prochain personnage."
+            : "Devine de quel stand il s'agit pour trouver le personnage à recruter."
       }
     >
       {/* Petit logo Manga Paradise en haut de la modale */}
@@ -322,6 +323,11 @@ export function EnigmaModal({
               </Button>
             </div>
           </form>
+
+          {/* Joker : coup de pouce si bloqué */}
+          <div className="pt-2">
+            <StuckHint variant="inline" />
+          </div>
         </div>
       )}
     </Dialog>

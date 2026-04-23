@@ -7,6 +7,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/Toast";
 import { RotateCcw } from "lucide-react";
+import { StuckHint } from "@/components/StuckHint";
 
 interface StandLite {
   id: number;
@@ -175,6 +176,9 @@ export default function MapView({ children }: { children?: React.ReactNode }) {
       </Dialog>
 
       {children}
+
+      {/* Joker flottant : coup de pouce si bloqué */}
+      <StuckHint variant="floating" align="left" />
     </main>
   );
 }

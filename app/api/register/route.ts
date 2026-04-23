@@ -90,22 +90,10 @@ export async function POST(req: Request) {
 
     const sb = getSupabaseAdmin();
 
-    const { data: pseudoRow, error: pseudoErr } = await sb
-      .from("participants")
-      .select("id")
-      .eq("pseudo", pseudo)
-      .maybeSingle();
-    if (pseudoErr) return serverError(pseudoErr, "select pseudo");
-    if (pseudoRow) {
-      return NextResponse.json(
-        {
-          error: "Ce pseudo est déjà pris, choisis-en un autre.",
-          field: "pseudo",
-        },
-        { status: 409 }
-      );
-    }
-
+    // Pas d'unicité sur le pseudo : un même pseudo peut être utilisé par
+    // plusieurs participants (pour éviter de bloquer les utilisateurs en cas
+    // de reprise d'inscription après un incident). Les participants sont
+    // distingués en base par leur id, et reliés aux coordonnées via Tally.
     const { data: inserted, error: insErr } = await sb
       .from("participants")
       .insert({
@@ -116,17 +104,6 @@ export async function POST(req: Request) {
       .single();
 
     if (insErr || !inserted) {
-      const pg = insErr as PgError | null;
-      if (pg?.code === "23505") {
-        logPg("insert 23505", insErr);
-        return NextResponse.json(
-          {
-            error: "Ce pseudo est déjà pris, choisis-en un autre.",
-            field: "pseudo",
-          },
-          { status: 409 }
-        );
-      }
       return serverError(insErr, "insert participant");
     }
 

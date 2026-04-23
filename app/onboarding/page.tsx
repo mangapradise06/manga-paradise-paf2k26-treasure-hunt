@@ -158,8 +158,10 @@ export default function OnboardingPage() {
           title="🎯 Le but"
         >
           <p>
-            Retrouver 10 personnages d&apos;anime cachés dans 10 stands du Play
-            Azur Festival 2026.
+            Retrouve <strong>10 personnages d&apos;anime</strong> cachés dans <strong>10 stands</strong> du Play Azur Festival.
+          </p>
+          <p className="mt-2">
+            Chaque personnage que tu décoches te donne une lettre. Les <strong>premières lettres des 10 personnages</strong> forment, dans l&apos;ordre, un <strong>mot caché</strong> à découvrir à la fin&nbsp;: c&apos;est ta récompense.
           </p>
         </Section>
 
@@ -170,32 +172,21 @@ export default function OnboardingPage() {
         >
           <ol className="mt-2 space-y-2">
             {[
-              <>Lis attentivement l&apos;énigme de l&apos;étape en cours.</>,
               <>
-                Essaie de deviner de quel stand on parle grâce aux indices
-                qui apparaissent en dessous. Si tu ne trouves pas,
-                n&apos;hésite pas à revenir sur le stand Manga Paradise :
-                on est là pour t&apos;aider.
+                Pour chaque étape, tu reçois une énigme avec <strong>deux indices</strong> pour deviner <strong>de quel stand du festival</strong> on parle.
               </>,
               <>
-                Une fois sur le bon stand, trouve le personnage d&apos;anime
-                qui lui est associé.{" "}
-                <em>
-                  (N&apos;hésite pas à demander à l&apos;exposant qui gère
-                  le stand de te montrer le personnage en question —
-                  c&apos;est fait pour.)
-                </em>
+                Rends-toi sur le stand que tu as deviné et demande à l&apos;exposant de te donner le <strong>personnage d&apos;anime à trouver</strong> sur son stand.
               </>,
               <>
-                Reviens dans l&apos;app, tape le{" "}
-                <strong>prénom + nom complet</strong> du personnage,
-                exactement comme l&apos;exposant te l&apos;a donné. Pas de
-                faute, sinon l&apos;app ne valide pas. Exemple : «&nbsp;Monkey
-                D. Luffy&nbsp;» et pas juste «&nbsp;Luffy&nbsp;».
+                Reviens dans l&apos;app et tape le{" "}
+                <strong>prénom + nom complet</strong> du personnage, exactement comme l&apos;exposant te l&apos;a donné. Exemple : «&nbsp;Monkey D. Luffy&nbsp;» et pas juste «&nbsp;Luffy&nbsp;».
               </>,
               <>
-                Répète ça 10 fois pour débloquer la dernière épreuve et
-                trouver le mot secret final.
+                Répète l&apos;opération <strong>pour les 10 stands</strong>. À chaque bonne réponse, une <strong>lettre</strong> se dévoile.
+              </>,
+              <>
+                Les 10 lettres forment un <strong>mot caché</strong>&nbsp;: devine-le pour terminer l&apos;aventure et entrer au tirage au sort.
               </>,
             ].map((node, i) => (
               <li key={i} className="flex items-start gap-2">
@@ -300,7 +291,7 @@ export default function OnboardingPage() {
             Une <strong>figurine Tsume de Deku</strong> (Izuku Midoriya, My Hero Academia) d&apos;une valeur de <strong>300&nbsp;€</strong>, à gagner par tirage au sort parmi tous les participants de la chasse au trésor du Play Azur Festival 2026.
           </p>
           <p className="mt-3 text-sm text-mp-ink-soft">
-            Le tirage au sort aura lieu en live sur l&apos;Instagram <strong>@mangaparadise_officiel</strong> à l&apos;issue de l&apos;événement.
+            Le tirage au sort aura lieu en live sur l&apos;Instagram <strong>@mangaparadisesud</strong> à l&apos;issue de l&apos;événement.
           </p>
         </Section>
       </div>

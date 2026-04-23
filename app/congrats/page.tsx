@@ -103,27 +103,27 @@ export default function CongratsPage() {
             <strong>figurine Tsume de Deku</strong> (300&nbsp;€), remplis ce
             dernier formulaire. Le tirage aura lieu en live sur{" "}
             <a
-              href="https://www.instagram.com/mangaparadise_officiel/"
+              href="https://www.instagram.com/mangaparadisesud/"
               target="_blank"
               rel="noopener"
               className="font-semibold text-mp-red underline"
             >
-              l&apos;Instagram @mangaparadise_officiel
+              l&apos;Instagram @mangaparadisesud
             </a>{" "}
             à l&apos;issue du Play Azur Festival 2026.
           </p>
 
-          {/* Tally embed */}
+          {/* Tally embed — Chasse au trésor Participation SAMEDI */}
           <div className="mt-5 overflow-hidden rounded-2xl border-2 border-mp-sky/40 bg-white">
             <iframe
-              data-tally-src="https://tally.so/embed/WOe2Kj?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+              data-tally-src="https://tally.so/r/WOe2Kj?transparentBackground=1"
               loading="lazy"
               width="100%"
-              height={600}
+              height={720}
               frameBorder={0}
               marginHeight={0}
               marginWidth={0}
-              title="Chasse au trésor — Participation"
+              title="Chasse au trésor - Participation SAMEDI"
               className="block w-full"
             />
           </div>

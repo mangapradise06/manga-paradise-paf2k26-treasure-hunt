@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/Toast";
 import { ToriiIcon } from "@/components/icons/ToriiIcon";
 import { Sakura } from "@/components/icons/Sakura";
+import { StuckHint } from "@/components/StuckHint";
 
 // ----- Types -----
 
@@ -271,6 +272,9 @@ export default function FinalPage() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Joker flottant */}
+      <StuckHint variant="floating" align="left" />
 
       {/* Picker modal */}
       <AnimatePresence>

@@ -91,38 +91,60 @@ export default function LandingPage() {
             Comment tenter ta chance ?
           </h3>
           <p className="mt-2 text-sm text-mp-ink sm:text-base">
-            Plus tu participes, plus tu as de chances. Le tirage au sort sera
-            effectué en live sur le compte Instagram Manga Paradise, parmi tous
-            les bulletins papier déposés sur le stand.
+            Plus tu participes, plus tu as de chances au tirage au sort.
           </p>
-          <ul className="mt-4 space-y-3">
-            <li className="flex items-start gap-3">
-              <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mp-red font-display text-base italic font-bold text-white">
-                1
+
+          <ul className="mt-6 space-y-5">
+            {/* Bulle 1 : checkmark rouge */}
+            <li className="flex items-center gap-4">
+              <span
+                aria-hidden
+                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-mp-red text-white shadow-mp-card sm:h-20 sm:w-20"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 sm:h-10 sm:w-10">
+                  <polyline points="4 12 10 18 20 6" />
+                </svg>
               </span>
               <span className="text-sm text-mp-ink sm:text-base">
-                <strong>Tu fais la chasse sur 1 journée</strong> → 1 chance au tirage.
+                <strong>Tu participes 1 jour</strong> (samedi <em>ou</em> dimanche)
+                <br />
+                <span className="text-mp-ink-soft">→ inscription au tirage au sort.</span>
               </span>
             </li>
-            <li className="flex items-start gap-3">
-              <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mp-coral font-display text-base italic font-bold text-white">
-                2
+
+            {/* Bulle 2 : x2 corail */}
+            <li className="flex items-center gap-4">
+              <span
+                aria-hidden
+                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-mp-coral font-display text-2xl italic font-extrabold text-white shadow-mp-card sm:h-20 sm:w-20 sm:text-3xl"
+              >
+                x2
               </span>
               <span className="text-sm text-mp-ink sm:text-base">
-                <strong>Tu fais les 2 journées</strong> (chaque jour a sa propre chasse, différente) → 2 chances.
+                <strong>Tu participes 2 jours</strong> (samedi <em>et</em> dimanche)
+                <br />
+                <span className="text-mp-ink-soft">→ 2 fois plus de chances de gagner.</span>
               </span>
             </li>
-            <li className="flex items-start gap-3">
-              <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mp-orange font-display text-base italic font-bold text-white">
-                +1
+
+            {/* Bulle 3 : x3 orange */}
+            <li className="flex items-center gap-4">
+              <span
+                aria-hidden
+                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-mp-orange font-display text-2xl italic font-extrabold text-white shadow-mp-card sm:h-20 sm:w-20 sm:text-3xl"
+              >
+                x3
               </span>
               <span className="text-sm text-mp-ink sm:text-base">
-                <strong>Tu t&apos;inscris à la newsletter Manga Paradise</strong> → 1 chance bonus.
+                <strong>Tu t&apos;inscris à la newsletter Manga Paradise</strong>
+                <br />
+                <span className="text-mp-ink-soft">→ 3 fois plus de chances de gagner.</span>
               </span>
             </li>
           </ul>
-          <p className="mt-4 rounded-xl border border-mp-red/30 bg-white/70 p-3 text-xs text-mp-ink-soft">
-            Soit jusqu&apos;à <strong className="text-mp-red">3 chances maximum</strong> de remporter la figurine. Tirage live sur l&apos;<a href="https://www.instagram.com/mangaparadise_officiel/" target="_blank" rel="noopener" className="font-semibold underline">Instagram @mangaparadise_officiel</a> à l&apos;issue du Play Azur Festival.
+
+          <p className="mt-6 rounded-xl border border-mp-red/30 bg-white/70 p-3 text-xs text-mp-ink-soft sm:text-sm">
+            Soit jusqu&apos;à <strong className="text-mp-red">3 chances maximum</strong> de remporter la figurine. Tirage live sur l&apos;<a href="https://www.instagram.com/mangaparadisesud/" target="_blank" rel="noopener" className="font-semibold text-mp-red underline decoration-mp-red/40 underline-offset-2 hover:decoration-mp-red">Instagram de Manga Paradise</a> à l&apos;issue du Play Azur Festival.
           </p>
         </div>
       </section>
@@ -137,7 +159,7 @@ export default function LandingPage() {
             Découvre · Explore · Gagne
           </h2>
           <p className="mt-3 text-sm text-mp-ink-soft sm:text-base">
-            10 stands, 10 énigmes, 10 personnages à recruter. Rassemble leurs
+            10 stands, 10 énigmes, 10 personnages à trouver. Rassemble leurs
             initiales, devine l&apos;anime caché et tente de remporter une
             figurine officielle.
           </p>
