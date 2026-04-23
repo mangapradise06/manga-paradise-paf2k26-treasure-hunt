@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 
 interface Body {
   guess?: string;
+  answer?: string;
 }
 
 export async function POST(req: Request) {
@@ -22,7 +23,13 @@ export async function POST(req: Request) {
   } catch {
     return NextResponse.json({ error: "JSON invalide" }, { status: 400 });
   }
-  const guess = typeof body.guess === "string" ? body.guess.slice(0, 120) : "";
+  const raw =
+    typeof body.guess === "string"
+      ? body.guess
+      : typeof body.answer === "string"
+        ? body.answer
+        : "";
+  const guess = raw.slice(0, 120);
   if (!guess.trim())
     return NextResponse.json({ error: "Réponse vide" }, { status: 400 });
 
@@ -64,5 +71,5 @@ export async function POST(req: Request) {
     })
     .eq("id", sess.participantId);
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, success: true });
 }

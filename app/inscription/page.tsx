@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/Toast";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Info } from "lucide-react";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -74,13 +74,17 @@ export default function InscriptionPage() {
     }
 
     if (!res.ok || !json.ok) {
-      const msg = json.error ?? `Inscription impossible (${res.status}).`;
+      let msg = json.error ?? `Inscription impossible (${res.status}).`;
+      if (res.status === 409 && json.field === "email") {
+        msg =
+          "Cet email a déjà été utilisé pour une participation. Si tu penses à un bug, contacte un bénévole sur place.";
+      }
       if (json.field) setErrors((prev) => ({ ...prev, [json.field!]: msg }));
       toast(msg, { variant: "error" });
       setLoading(false);
       return;
     }
-    router.push("/map");
+    router.push("/onboarding");
   }
 
   return (
@@ -98,6 +102,18 @@ export default function InscriptionPage() {
           Une minute et tu pars à l'aventure. On garde tes coordonnées au chaud
           uniquement pour le tirage au sort.
         </p>
+
+        <div
+          role="note"
+          className="mt-4 flex items-start gap-2 rounded-xl border border-treasure-gold/40 bg-treasure-gold/10 p-3 text-sm text-parchment-ink"
+        >
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-treasure-gold" aria-hidden />
+          <p>
+            <span className="font-semibold">Une seule participation par
+            adresse email.</span>{" "}
+            Prends le temps de bien renseigner tes infos.
+          </p>
+        </div>
 
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
