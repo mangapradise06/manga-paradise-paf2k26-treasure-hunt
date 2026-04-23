@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Script from "next/script";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -95,18 +96,49 @@ export default function CongratsPage() {
         <div className="mp-card p-6 text-left sm:p-8">
           <div className="mb-2 flex items-center gap-2 font-display text-xl italic text-mp-red">
             <Sparkles className="h-5 w-5 text-mp-orange" aria-hidden />
-            Tirage au sort
+            Dernière étape : tes coordonnées
           </div>
           <p className="text-sm text-mp-ink sm:text-base">
-            Tu es officiellement inscrit·e au tirage au sort final pour gagner
-            une{" "}
-            <strong>figurine officielle d&apos;une valeur d&apos;environ 300&nbsp;€</strong>.
-            Le tirage aura lieu à la fin du Play Azure Festival 2026. Le ou la
-            gagnant·e sera contacté·e par email directement. Bonne chance&nbsp;!
+            Pour être inscrit·e au tirage au sort de la{" "}
+            <strong>figurine Tsume de Deku</strong> (300&nbsp;€), remplis ce
+            dernier formulaire. Le tirage aura lieu en live sur{" "}
+            <a
+              href="https://www.instagram.com/mangaparadise_officiel/"
+              target="_blank"
+              rel="noopener"
+              className="font-semibold text-mp-red underline"
+            >
+              l&apos;Instagram @mangaparadise_officiel
+            </a>{" "}
+            à l&apos;issue du Play Azur Festival 2026.
           </p>
-          <p className="mt-3 text-xs text-mp-ink-soft">
-            Tu peux refermer cette page — ta participation est bien enregistrée.
-          </p>
+
+          {/* Tally embed */}
+          <div className="mt-5 overflow-hidden rounded-2xl border-2 border-mp-sky/40 bg-white">
+            <iframe
+              data-tally-src="https://tally.so/embed/WOe2Kj?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+              loading="lazy"
+              width="100%"
+              height={600}
+              frameBorder={0}
+              marginHeight={0}
+              marginWidth={0}
+              title="Chasse au trésor — Participation"
+              className="block w-full"
+            />
+          </div>
+          <Script
+            id="tally-embed"
+            src="https://tally.so/widgets/embed.js"
+            strategy="afterInteractive"
+          />
+
+          {me?.participant.pseudo && (
+            <p className="mt-3 text-xs text-mp-ink-soft">
+              Ton pseudo : <strong>{me.participant.pseudo}</strong>. Pense à le
+              réutiliser dans le formulaire pour qu&apos;on te retrouve.
+            </p>
+          )}
         </div>
 
         <div className="mt-8 text-center">

@@ -6,16 +6,11 @@ import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const IS_DEV = process.env.NODE_ENV === "development";
 
 interface RegisterBody {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
   pseudo?: string;
   rgpd?: boolean;
-  newsletter?: boolean;
 }
 
 interface PgError {
@@ -76,21 +71,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "JSON invalide" }, { status: 400 });
     }
 
-    const firstName = clean(body.firstName, 60);
-    const lastName = clean(body.lastName, 60);
-    const email = clean(body.email, 180).toLowerCase();
     const pseudo = clean(body.pseudo, 40);
     const rgpd = body.rgpd === true;
-    const newsletter = body.newsletter === true;
 
-    if (!firstName)
-      return NextResponse.json({ error: "Prénom requis", field: "firstName" }, { status: 400 });
-    if (!lastName)
-      return NextResponse.json({ error: "Nom requis", field: "lastName" }, { status: 400 });
     if (!pseudo)
-      return NextResponse.json({ error: "Pseudo requis", field: "pseudo" }, { status: 400 });
-    if (!EMAIL_RE.test(email))
-      return NextResponse.json({ error: "Email invalide", field: "email" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Pseudo requis", field: "pseudo" },
+        { status: 400 }
+      );
     if (!rgpd)
       return NextResponse.json(
         {
@@ -101,22 +89,6 @@ export async function POST(req: Request) {
       );
 
     const sb = getSupabaseAdmin();
-
-    const { data: emailRow, error: emailErr } = await sb
-      .from("participants")
-      .select("id")
-      .eq("email", email)
-      .maybeSingle();
-    if (emailErr) return serverError(emailErr, "select email");
-    if (emailRow) {
-      return NextResponse.json(
-        {
-          error: "Un participant est déjà inscrit avec cet email.",
-          field: "email",
-        },
-        { status: 409 }
-      );
-    }
 
     const { data: pseudoRow, error: pseudoErr } = await sb
       .from("participants")
@@ -137,12 +109,8 @@ export async function POST(req: Request) {
     const { data: inserted, error: insErr } = await sb
       .from("participants")
       .insert({
-        first_name: firstName,
-        last_name: lastName,
-        email,
         pseudo,
         rgpd_consent: true,
-        newsletter_consent: newsletter,
       })
       .select("id")
       .single();
@@ -150,15 +118,11 @@ export async function POST(req: Request) {
     if (insErr || !inserted) {
       const pg = insErr as PgError | null;
       if (pg?.code === "23505") {
-        const detail = (pg.details ?? "") + " " + (pg.message ?? "");
-        const isEmail = /email/i.test(detail);
         logPg("insert 23505", insErr);
         return NextResponse.json(
           {
-            error: isEmail
-              ? "Un participant est déjà inscrit avec cet email."
-              : "Ce pseudo est déjà pris, choisis-en un autre.",
-            field: isEmail ? "email" : "pseudo",
+            error: "Ce pseudo est déjà pris, choisis-en un autre.",
+            field: "pseudo",
           },
           { status: 409 }
         );

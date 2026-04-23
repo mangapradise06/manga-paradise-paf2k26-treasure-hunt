@@ -21,7 +21,7 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Chasse au trésor — Manga Paradise × PAF 2026",
   description:
-    "Participe à la chasse au trésor Manga Paradise au Play Azure Festival 2026 et tente de gagner une figurine officielle.",
+    "Participe à la chasse au trésor Manga Paradise au Play Azur Festival 2026 et tente de gagner une figurine officielle.",
   manifest: "/manifest.json",
   applicationName: "PAF 2K26",
   appleWebApp: {

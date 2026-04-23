@@ -6,16 +6,11 @@ import Link from "next/link";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/Toast";
-import { ArrowLeft, Info } from "lucide-react";
+import { ArrowLeft, Info, MapPinned, Trophy, Users } from "lucide-react";
 import { ToriiIcon } from "@/components/icons/ToriiIcon";
 import { Sakura } from "@/components/icons/Sakura";
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 interface FieldErrors {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
   pseudo?: string;
   rgpd?: string;
 }
@@ -23,21 +18,14 @@ interface FieldErrors {
 export default function InscriptionPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
   const [pseudo, setPseudo] = useState("");
   const [rgpd, setRgpd] = useState(false);
-  const [newsletter, setNewsletter] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
 
   function validate(): FieldErrors {
     const errs: FieldErrors = {};
-    if (!firstName.trim()) errs.firstName = "Prénom requis";
-    if (!lastName.trim()) errs.lastName = "Nom requis";
     if (!pseudo.trim()) errs.pseudo = "Choisis un pseudo";
-    if (!EMAIL_RE.test(email.trim())) errs.email = "Email invalide";
     if (!rgpd) errs.rgpd = "Nécessaire pour participer";
     return errs;
   }
@@ -53,14 +41,7 @@ export default function InscriptionPage() {
       res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
-          email: email.trim().toLowerCase(),
-          pseudo: pseudo.trim(),
-          rgpd,
-          newsletter,
-        }),
+        body: JSON.stringify({ pseudo: pseudo.trim(), rgpd }),
       });
     } catch {
       toast("Erreur réseau, réessaie.", { variant: "error" });
@@ -72,15 +53,10 @@ export default function InscriptionPage() {
     try {
       json = await res.json();
     } catch {
-      // Réponse non-JSON (typiquement page d'erreur HTML d'un 500 non catché côté serveur).
+      /* non-JSON */
     }
-
     if (!res.ok || !json.ok) {
-      let msg = json.error ?? `Inscription impossible (${res.status}).`;
-      if (res.status === 409 && json.field === "email") {
-        msg =
-          "Cet email a déjà été utilisé pour une participation. Si tu penses à un bug, contacte un bénévole sur place.";
-      }
+      const msg = json.error ?? `Inscription impossible (${res.status}).`;
       if (json.field) setErrors((prev) => ({ ...prev, [json.field!]: msg }));
       toast(msg, { variant: "error" });
       setLoading(false);
@@ -117,13 +93,43 @@ export default function InscriptionPage() {
             <ToriiIcon size={22} color="#ffffff" />
           </div>
           <h1 className="font-display text-3xl italic sm:text-4xl">
-            Inscription
+            Entrée dans l&apos;aventure
           </h1>
         </div>
         <p className="mt-1 text-sm text-white/90 sm:text-base">
-          Une minute et tu pars à l&apos;aventure. On garde tes coordonnées au
-          chaud uniquement pour le tirage au sort.
+          On ne te demande que ton pseudo pour l&apos;instant. Tes coordonnées
+          seront récoltées à la fin, une fois le mot secret trouvé.
         </p>
+      </div>
+
+      {/* Rappel des règles */}
+      <div className="mp-card mb-5 p-5 sm:p-6">
+        <h2 className="font-display text-lg italic text-mp-red sm:text-xl">
+          Avant de partir…
+        </h2>
+        <ul className="mt-3 space-y-2.5 text-sm text-mp-ink">
+          <li className="flex items-start gap-2">
+            <MapPinned className="mt-0.5 h-4 w-4 shrink-0 text-mp-red" aria-hidden />
+            <span>
+              10 stands à découvrir dans l&apos;ordre : une énigme, un indice, un
+              personnage d&apos;anime à identifier.
+            </span>
+          </li>
+          <li className="flex items-start gap-2">
+            <Users className="mt-0.5 h-4 w-4 shrink-0 text-mp-coral" aria-hidden />
+            <span>
+              Une chasse différente sera proposée samedi et dimanche. Chaque
+              journée te donne 1 chance au tirage.
+            </span>
+          </li>
+          <li className="flex items-start gap-2">
+            <Trophy className="mt-0.5 h-4 w-4 shrink-0 text-mp-orange" aria-hidden />
+            <span>
+              À la clé : une <strong>figurine Tsume de Deku</strong> (My Hero
+              Academia), valeur 300&nbsp;€, tirée au sort en live sur Instagram.
+            </span>
+          </li>
+        </ul>
       </div>
 
       <div className="mp-card p-6 sm:p-8">
@@ -133,53 +139,23 @@ export default function InscriptionPage() {
         >
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-mp-coral" aria-hidden />
           <p>
-            <span className="font-semibold">Une seule participation par
-            adresse email.</span>{" "}
-            Prends le temps de bien renseigner tes infos.
+            Tes <strong>coordonnées (nom, email, newsletter)</strong> te seront
+            demandées une fois la chasse terminée, via un formulaire dédié. Pour
+            l&apos;instant, juste un pseudo pour s&apos;identifier.
           </p>
         </div>
 
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Input
-              label="Prénom"
-              name="firstName"
-              autoComplete="given-name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              error={errors.firstName}
-              required
-            />
-            <Input
-              label="Nom"
-              name="lastName"
-              autoComplete="family-name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              error={errors.lastName}
-              required
-            />
-          </div>
           <Input
-            label="Email"
-            type="email"
-            name="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={errors.email}
-            hint="Sert uniquement à te contacter si tu gagnes."
-            required
-          />
-          <Input
-            label="Pseudo"
+            label="Ton pseudo"
             name="pseudo"
             value={pseudo}
             onChange={(e) => setPseudo(e.target.value)}
             error={errors.pseudo}
             maxLength={40}
-            hint="C'est ce nom qui s'affichera sur le tableau des vainqueurs."
+            hint="C'est ce nom qui s'affichera tout au long de la chasse."
             required
+            autoFocus
           />
 
           <label className="flex items-start gap-2 text-sm">
@@ -191,26 +167,13 @@ export default function InscriptionPage() {
               aria-describedby="rgpd-hint"
             />
             <span id="rgpd-hint" className="text-mp-ink">
-              J&apos;accepte que mes données soient utilisées pour l&apos;animation de la
-              chasse au trésor et pour me contacter en cas de gain. (obligatoire)
+              J&apos;autorise Manga Paradise à utiliser ce pseudo pour
+              m&apos;identifier pendant la chasse au trésor. (obligatoire)
               {errors.rgpd && (
                 <span className="mt-1 block text-xs text-mp-red">
                   {errors.rgpd}
                 </span>
               )}
-            </span>
-          </label>
-
-          <label className="flex items-start gap-2 text-sm text-mp-ink">
-            <input
-              type="checkbox"
-              checked={newsletter}
-              onChange={(e) => setNewsletter(e.target.checked)}
-              className="mt-1 h-4 w-4 accent-mp-red"
-            />
-            <span>
-              Je souhaite recevoir la newsletter Manga Paradise (événements,
-              actus, offres spéciales). Désinscription à tout moment.
             </span>
           </label>
 
@@ -227,13 +190,8 @@ export default function InscriptionPage() {
       </div>
 
       <p className="mt-6 text-center text-xs text-mp-ink-soft">
-        En t&apos;inscrivant tu acceptes que Manga Paradise (association loi 1901)
-        conserve tes données pendant la durée de l&apos;événement. Droit d&apos;accès, de
-        rectification et de suppression :{" "}
-        <a href="mailto:lucas.protin@manga-paradise.fr" className="underline">
-          lucas.protin@manga-paradise.fr
-        </a>
-        .
+        Manga Paradise (association loi 1901). Tes données ne seront utilisées
+        que pour l&apos;animation de la chasse au trésor.
       </p>
     </main>
   );

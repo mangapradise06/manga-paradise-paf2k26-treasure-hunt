@@ -11,6 +11,7 @@ export interface Stand {
   narrative_role: string | null;
   map_x: number;
   map_y: number;
+  logo_url: string | null;
 }
 
 export interface Participant {

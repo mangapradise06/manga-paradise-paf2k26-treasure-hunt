@@ -54,5 +54,6 @@ export async function GET(
     // Sinon, on les masque (anti-triche : l'indice doit suffire).
     character_name: already ? stand.character_name : null,
     anime_name: already ? stand.anime_name : null,
+    logo_url: stand.logo_url,
   });
 }

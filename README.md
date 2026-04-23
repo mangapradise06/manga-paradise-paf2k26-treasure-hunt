@@ -1,7 +1,7 @@
 # Chasse au Trésor PAF 2K26 — Manga Paradise
 
 Web app **Next.js 14** + **Supabase** pour animer une chasse au trésor de 10
-étapes au Play Azure Festival 2026 à Nice. Chaque stand propose une énigme ;
+étapes au Play Azur Festival 2026 à Nice. Chaque stand propose une énigme ;
 à la clé, une figurine officielle à gagner au tirage au sort.
 
 ## Stack

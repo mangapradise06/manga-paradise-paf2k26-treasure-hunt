@@ -120,5 +120,6 @@ export async function POST(req: Request) {
     nextStandId: newNext?.id ?? null,
     next_stand_id: newNext?.id ?? null,
     stand_name: next.name,
+    logo_url: next.logo_url ?? null,
   });
 }

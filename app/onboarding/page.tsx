@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   Award,
   Compass,
+  HelpCircle,
   Lightbulb,
   Mail,
   MapPin,
@@ -263,18 +264,27 @@ export default function OnboardingPage() {
         </Section>
 
         <Section
+          tone="sky"
+          icon={<HelpCircle className="h-5 w-5" />}
+          title="Tu ne sais pas ?"
+        >
+          <p>
+            Pour toute question ou si tu restes bloqué sur une étape,
+            retourne sur le <strong>stand Manga Paradise</strong> : on est là
+            pour te donner un tip ou une aide.
+          </p>
+        </Section>
+
+        <Section
           tone="red"
           icon={<Trophy className="h-5 w-5" />}
           title="🎁 Les récompenses"
         >
           <p>
-            Une <strong>figurine TSUME officielle</strong> à gagner par{" "}
-            <strong>tirage au sort</strong> parmi tous les participants
-            qui termineront la chasse au trésor.
+            Une <strong>figurine Tsume de Deku</strong> (Izuku Midoriya, My Hero Academia) d&apos;une valeur de <strong>300&nbsp;€</strong>, à gagner par tirage au sort parmi tous les participants de la chasse au trésor du Play Azur Festival 2026.
           </p>
-          <p className="mt-3 text-mp-ink-soft">
-            (Ainsi que d&apos;autres goodies, mangas, et places VIP pour
-            les prochains événements.)
+          <p className="mt-3 text-sm text-mp-ink-soft">
+            Le tirage au sort aura lieu en live sur l&apos;Instagram <strong>@mangaparadise_officiel</strong> à l&apos;issue de l&apos;événement.
           </p>
         </Section>
       </div>

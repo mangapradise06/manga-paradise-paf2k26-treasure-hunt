@@ -26,6 +26,8 @@ export interface EnigmaData {
   character_name?: string | null;
   /** Mode review : anime associé (uniquement si already === true). */
   anime_name?: string | null;
+  /** Logo du partenaire / stand — dispo en tous modes. */
+  logo_url?: string | null;
 }
 
 type ModalMode = "active" | "review";
@@ -47,6 +49,7 @@ interface ValidateResponse {
   nextStandId?: number | null;
   next_stand_id?: number | null;
   stand_name?: string;
+  logo_url?: string | null;
   hint_full_name?: boolean;
   error?: string;
 }
@@ -68,6 +71,7 @@ export function EnigmaModal({
   const [fullNameHint, setFullNameHint] = useState(false);
   const [success, setSuccess] = useState(false);
   const [revealStandName, setRevealStandName] = useState<string | null>(null);
+  const [revealLogo, setRevealLogo] = useState<string | null>(null);
   const [pendingResult, setPendingResult] = useState<{
     complete: boolean;
     nextStandId: number | null;
@@ -91,6 +95,7 @@ export function EnigmaModal({
     setSuccess(false);
     setSubmitting(false);
     setRevealStandName(null);
+    setRevealLogo(null);
     setPendingResult(null);
     if (!isReview) {
       setTimeout(() => inputRef.current?.focus(), 250);
@@ -135,6 +140,7 @@ export function EnigmaModal({
       // victoire : on révèle le nom du stand avant de poursuivre
       const revealedName = json.stand_name ?? stand.name;
       setRevealStandName(revealedName);
+      setRevealLogo(json.logo_url ?? stand.logo_url ?? null);
       setSuccess(true);
       setPendingResult({
         complete: Boolean(json.complete),
@@ -206,10 +212,15 @@ export function EnigmaModal({
           >
             <CheckCircle2 className="h-12 w-12" strokeWidth={2.4} />
           </motion.div>
-          <div>
+          <div className="flex flex-col items-center">
             <h3 className="font-display italic text-3xl text-mp-red sm:text-4xl">
               Bravo !
             </h3>
+            {revealLogo && (
+              <div className="mt-4 flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl bg-white p-2 shadow-mp ring-2 ring-mp-red/20 sm:h-28 sm:w-28">
+                <Image src={revealLogo} alt={`Logo ${revealStandName}`} width={112} height={112} className="h-full w-full object-contain" />
+              </div>
+            )}
             <p className="mt-3 text-sm text-mp-ink sm:text-base">
               Ce personnage se trouvait au stand :
             </p>
@@ -413,6 +424,11 @@ function ReviewContent({
 
       {stand.character_name && (
         <div className="rounded-2xl border border-mp-sky/40 bg-white p-4">
+          {stand.logo_url && (
+            <div className="mb-3 flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-white p-1.5 shadow-mp ring-2 ring-mp-red/20">
+              <Image src={stand.logo_url} alt={`Logo ${stand.name}`} width={96} height={96} className="h-full w-full object-contain" />
+            </div>
+          )}
           <p className="text-[11px] font-semibold uppercase tracking-widest text-mp-ink-soft">
             Personnage
           </p>

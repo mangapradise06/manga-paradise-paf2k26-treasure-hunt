@@ -83,7 +83,7 @@ export function TreasureMap({ stands, completedStandIds, nextStandId }: Props) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/map/treasure-map-bg.svg"
-          alt="Carte au trésor — Play Azure Festival 2026"
+          alt="Carte au trésor — Play Azur Festival 2026"
           className="absolute inset-0 h-full w-full rounded-xl object-cover"
           draggable={false}
         />

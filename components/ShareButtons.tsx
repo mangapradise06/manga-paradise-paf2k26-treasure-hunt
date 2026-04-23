@@ -12,7 +12,7 @@ interface Props {
 
 export function ShareButtons({
   title = "Chasse au Trésor PAF 2K26",
-  text = "J'ai résolu la chasse au trésor de Manga Paradise au Play Azure Festival 2026 ! Tente ta chance aussi.",
+  text = "J'ai résolu la chasse au trésor de Manga Paradise au Play Azur Festival 2026 ! Tente ta chance aussi.",
   url,
 }: Props) {
   const [copied, setCopied] = useState(false);

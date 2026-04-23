@@ -31,7 +31,7 @@ export default function LandingPage() {
               <Logo size={80} alt="Manga Paradise" />
             </div>
             <span className="inline-flex items-center gap-1 rounded-full border border-white/40 bg-white/25 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white backdrop-blur-sm">
-              Play Azure Festival 2026 · Nice
+              Play Azur Festival 2026 · Nice
             </span>
           </div>
 
@@ -55,6 +55,77 @@ export default function LandingPage() {
           </Link>
         </div>
       </MangaParadiseBackdrop>
+
+      {/* ===== SECTION RÉCOMPENSE ===== */}
+      <section className="relative mx-auto max-w-4xl px-5 pt-12 sm:pt-16">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-mp-red">
+            À gagner
+          </p>
+          <h2 className="mt-2 font-display text-3xl italic text-mp-ink sm:text-4xl">
+            Une figurine Tsume de Deku
+          </h2>
+          <p className="mt-3 text-sm text-mp-ink-soft sm:text-base">
+            Izuku Midoriya (My Hero Academia) — édition officielle{" "}
+            <strong>Tsume</strong> d&apos;une valeur de <strong>300&nbsp;€</strong>,
+            à gagner par tirage au sort parmi tous les participants de la chasse au
+            trésor du Play Azur Festival 2026.
+          </p>
+        </div>
+
+        <div className="relative mt-8 overflow-hidden rounded-3xl shadow-mp-strong ring-2 ring-mp-red/20">
+          <Image
+            src="/brand/prize/deku-tsume.webp"
+            alt="Figurine Tsume de Deku à gagner"
+            width={2392}
+            height={1080}
+            className="h-auto w-full"
+            priority={false}
+            sizes="(max-width: 768px) 100vw, 900px"
+          />
+        </div>
+
+        {/* Modalités du tirage */}
+        <div className="mt-8 rounded-3xl border-2 border-mp-coral/40 bg-gradient-to-br from-mp-coral/10 via-mp-orange/10 to-mp-red/5 p-6 sm:p-8">
+          <h3 className="font-display text-xl italic text-mp-red sm:text-2xl">
+            Comment tenter ta chance ?
+          </h3>
+          <p className="mt-2 text-sm text-mp-ink sm:text-base">
+            Plus tu participes, plus tu as de chances. Le tirage au sort sera
+            effectué en live sur le compte Instagram Manga Paradise, parmi tous
+            les bulletins papier déposés sur le stand.
+          </p>
+          <ul className="mt-4 space-y-3">
+            <li className="flex items-start gap-3">
+              <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mp-red font-display text-base italic font-bold text-white">
+                1
+              </span>
+              <span className="text-sm text-mp-ink sm:text-base">
+                <strong>Tu fais la chasse sur 1 journée</strong> → 1 chance au tirage.
+              </span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mp-coral font-display text-base italic font-bold text-white">
+                2
+              </span>
+              <span className="text-sm text-mp-ink sm:text-base">
+                <strong>Tu fais les 2 journées</strong> (chaque jour a sa propre chasse, différente) → 2 chances.
+              </span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mp-orange font-display text-base italic font-bold text-white">
+                +1
+              </span>
+              <span className="text-sm text-mp-ink sm:text-base">
+                <strong>Tu t&apos;inscris à la newsletter Manga Paradise</strong> → 1 chance bonus.
+              </span>
+            </li>
+          </ul>
+          <p className="mt-4 rounded-xl border border-mp-red/30 bg-white/70 p-3 text-xs text-mp-ink-soft">
+            Soit jusqu&apos;à <strong className="text-mp-red">3 chances maximum</strong> de remporter la figurine. Tirage live sur l&apos;<a href="https://www.instagram.com/mangaparadise_officiel/" target="_blank" rel="noopener" className="font-semibold underline">Instagram @mangaparadise_officiel</a> à l&apos;issue du Play Azur Festival.
+          </p>
+        </div>
+      </section>
 
       {/* ===== SECTION FEATURES ===== */}
       <section className="relative mx-auto max-w-5xl px-5 pb-16 pt-10 sm:pb-24 sm:pt-16">
@@ -101,6 +172,19 @@ export default function LandingPage() {
             Commencer l&apos;aventure
             <ChevronRight className="h-4 w-4" />
           </Link>
+        </div>
+      </section>
+
+      {/* ===== BULLE D'AIDE "Tu ne sais pas ?" ===== */}
+      <section className="mx-auto max-w-3xl px-5 pt-4 pb-10">
+        <div className="flex items-start gap-3 rounded-2xl border border-mp-sky/60 bg-mp-sky-soft/80 p-4 shadow-mp-card">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-mp-red font-display text-2xl italic font-bold text-white">?</span>
+          <div className="text-sm text-mp-ink sm:text-base">
+            <p className="font-semibold text-mp-red">Tu ne sais pas ?</p>
+            <p className="mt-1 text-mp-ink-soft">
+              Pour toute question ou si tu es bloqué dans la chasse, retourne sur le <strong>stand Manga Paradise</strong> et demande un tip ou un coup de pouce aux bénévoles.
+            </p>
+          </div>
         </div>
       </section>
 
