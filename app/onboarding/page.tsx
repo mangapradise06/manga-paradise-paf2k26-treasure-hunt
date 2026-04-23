@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Award,
+  Camera,
   Compass,
   HelpCircle,
   Lightbulb,
@@ -126,13 +127,28 @@ export default function OnboardingPage() {
   return (
     <main className="mx-auto max-w-2xl px-5 pb-40 pt-6 sm:py-12">
       {/* Bannière gradient top */}
-      <div className="mp-banner mb-5">
+      <div className="mp-banner mb-4">
         <h1 className="font-display text-3xl italic sm:text-4xl">
           Bienvenue dans la chasse !
         </h1>
         <p className="mt-1 text-sm text-white/90 sm:text-base">
           Un petit briefing avant de partir à l&apos;aventure. Lis tranquillement, c&apos;est rapide.
         </p>
+      </div>
+
+      {/* Tip capture d'écran */}
+      <div className="mb-5 flex items-start gap-3 rounded-2xl border-2 border-mp-orange/40 bg-gradient-to-br from-mp-orange/10 to-mp-coral/10 p-4 shadow-mp-card sm:p-5">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-mp-orange text-white shadow-mp motion-safe:animate-torii-bounce">
+          <Camera className="h-5 w-5" aria-hidden />
+        </div>
+        <div className="min-w-0">
+          <div className="font-display text-lg italic text-mp-red sm:text-xl">
+            Astuce&nbsp;: fais des captures d&apos;écran&nbsp;!
+          </div>
+          <p className="mt-1 text-sm text-mp-ink sm:text-base">
+            Sauvegarde les consignes et les indices avec des screenshots&nbsp;: ça t&apos;aidera à t&apos;y retrouver pendant toute ton aventure, même sans réseau.
+          </p>
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -174,8 +190,8 @@ export default function OnboardingPage() {
                 Reviens dans l&apos;app, tape le{" "}
                 <strong>prénom + nom complet</strong> du personnage,
                 exactement comme l&apos;exposant te l&apos;a donné. Pas de
-                faute, sinon l&apos;app ne valide pas. Exemple : «&nbsp;Nagisa
-                Shiota&nbsp;» et pas juste «&nbsp;Nagisa&nbsp;».
+                faute, sinon l&apos;app ne valide pas. Exemple : «&nbsp;Monkey
+                D. Luffy&nbsp;» et pas juste «&nbsp;Luffy&nbsp;».
               </>,
               <>
                 Répète ça 10 fois pour débloquer la dernière épreuve et

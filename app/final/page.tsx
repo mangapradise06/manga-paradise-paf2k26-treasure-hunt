@@ -1,30 +1,11 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  DndContext,
-  DragOverlay,
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
-  useDraggable,
-  useDroppable,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-  type DragStartEvent,
-} from "@dnd-kit/core";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
-import { ArrowLeft, RotateCcw, Sparkles } from "lucide-react";
+import { ArrowLeft, RotateCcw, Sparkles, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/Toast";
 import { ToriiIcon } from "@/components/icons/ToriiIcon";
@@ -48,7 +29,7 @@ interface FinalSetup {
   characters_to_place: CharacterCard[];
 }
 
-type SlotState = (CharacterCard & { feedback?: "ok" | "ko" }) | null;
+type Placed = CharacterCard | null;
 
 // ----- Page -----
 
@@ -57,14 +38,12 @@ export default function FinalPage() {
   const { toast } = useToast();
   const [data, setData] = useState<FinalSetup | null>(null);
   const [loadErr, setLoadErr] = useState<string | null>(null);
-  const [slots, setSlots] = useState<SlotState[]>([]);
-  const [pool, setPool] = useState<CharacterCard[]>([]);
-  const [activeCard, setActiveCard] = useState<CharacterCard | null>(null);
+  const [slots, setSlots] = useState<Placed[]>([]);
+  const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
+  const [wrongPick, setWrongPick] = useState<{ slot: number; character: string } | null>(null);
   const [guess, setGuess] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const feedbackTimeouts = useRef<Record<number, ReturnType<typeof setTimeout>>>(
-    {}
-  );
+  const wrongTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Chargement initial
   useEffect(() => {
@@ -88,149 +67,69 @@ export default function FinalPage() {
         const setup = json as FinalSetup;
         setData(setup);
         setSlots(new Array(setup.narrative_order.length).fill(null));
-        setPool(setup.characters_to_place);
       } catch {
         setLoadErr("Erreur réseau.");
       }
     })();
     return () => {
-      Object.values(feedbackTimeouts.current).forEach((t) => clearTimeout(t));
+      if (wrongTimeoutRef.current) clearTimeout(wrongTimeoutRef.current);
     };
   }, [router, toast]);
 
-  // Sensors : mouse + touch + keyboard.
-  const sensors = useSensors(
-    useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 120, tolerance: 6 } }),
-    useSensor(KeyboardSensor)
-  );
-
   const narrative = data?.narrative_order ?? [];
+  const allCharacters = data?.characters_to_place ?? [];
 
-  // Toutes les cases sont-elles remplies ?
-  const allPlaced = slots.length > 0 && slots.every((s) => s !== null);
-  // Tous correctement placés ?
-  const allCorrect =
-    allPlaced &&
-    slots.every((s, i) => s && s.character === narrative[i]?.character);
-
-  const handleDragStart = useCallback(
-    (evt: DragStartEvent) => {
-      const id = String(evt.active.id);
-      const found = findCardById(id, pool, slots);
-      setActiveCard(found);
-    },
-    [pool, slots]
+  // Personnages déjà placés correctement (par nom)
+  const placedCharacterNames = new Set(
+    slots.filter((s): s is CharacterCard => s !== null).map((s) => s.character)
   );
 
-  const handleDragEnd = useCallback(
-    (evt: DragEndEvent) => {
-      setActiveCard(null);
-      const activeId = String(evt.active.id);
-      const overId = evt.over?.id ? String(evt.over.id) : null;
-      if (!overId) return;
+  // Toutes les cases sont-elles correctement remplies ?
+  const allCorrect =
+    slots.length > 0 &&
+    slots.every((s, i) => s !== null && s.character === narrative[i]?.character);
 
-      // L'id de slot commence par "slot-<index>"
-      const slotMatch = overId.match(/^slot-(\d+)$/);
-      if (!slotMatch) return;
-      const slotIndex = Number(slotMatch[1]);
-      if (!Number.isFinite(slotIndex)) return;
+  const openPicker = useCallback((slotIndex: number) => {
+    // Si le slot est déjà correct, on ne fait rien (il est verrouillé).
+    setWrongPick(null);
+    setSelectedSlot(slotIndex);
+  }, []);
 
-      // Identifier la source : pool ou autre slot
-      const card = findCardById(activeId, pool, slots);
-      if (!card) return;
+  const closePicker = useCallback(() => {
+    setSelectedSlot(null);
+    setWrongPick(null);
+  }, []);
 
-      const expected = narrative[slotIndex]?.character;
-      const isCorrect = expected === card.character;
+  const handlePick = useCallback(
+    (character: CharacterCard) => {
+      if (selectedSlot === null) return;
+      const expected = narrative[selectedSlot]?.character;
+      const isCorrect = expected === character.character;
 
       if (!isCorrect) {
-        // Retour au pool + flash rouge bref sur le slot
-        setSlots((prev) => {
-          const next = [...prev];
-          // Si la carte venait d'un autre slot, on l'y laisse (pas de déplacement).
-          // Marque visuellement le slot cible en rouge.
-          next[slotIndex] = prev[slotIndex]
-            ? { ...prev[slotIndex]!, feedback: "ko" }
-            : null;
-          return next;
-        });
-        // Si elle venait d'un slot, on l'enlève de ce slot pour la renvoyer au pool.
-        const srcMatch = activeId.match(/^slot-card-(\d+)$/);
-        if (srcMatch) {
-          const srcIdx = Number(srcMatch[1]);
-          setSlots((prev) => {
-            const next = [...prev];
-            next[srcIdx] = null;
-            return next;
-          });
-          setPool((prev) => addToPool(prev, card));
-        }
-        scheduleClearFeedback(slotIndex);
+        // Animation rouge + shake sur la carte mauvaise pick
+        setWrongPick({ slot: selectedSlot, character: character.character });
+        if (wrongTimeoutRef.current) clearTimeout(wrongTimeoutRef.current);
+        wrongTimeoutRef.current = setTimeout(() => {
+          setWrongPick(null);
+        }, 700);
         return;
       }
 
-      // Placement correct : on nettoie l'ancien emplacement + on remplit le slot.
+      // Bon choix : on place, on ferme, on donne un petit feedback sonore via toast
       setSlots((prev) => {
         const next = [...prev];
-        // si le slot contenait déjà une carte → on la renvoie au pool
-        const previousCard = prev[slotIndex];
-        if (previousCard) {
-          setPool((p) =>
-            addToPool(
-              p,
-              // strip feedback
-              { character: previousCard.character, anime: previousCard.anime }
-            )
-          );
-        }
-        next[slotIndex] = { ...card, feedback: "ok" };
+        next[selectedSlot] = { ...character };
         return next;
       });
-      // Si la carte venait d'un slot, vider ce slot source.
-      const srcMatch = activeId.match(/^slot-card-(\d+)$/);
-      if (srcMatch) {
-        const srcIdx = Number(srcMatch[1]);
-        if (srcIdx !== slotIndex) {
-          setSlots((prev) => {
-            const next = [...prev];
-            next[srcIdx] = null;
-            return next;
-          });
-        }
-      } else {
-        // la carte venait du pool → on la retire
-        setPool((prev) => prev.filter((c) => cardId(c) !== activeId));
-      }
-      scheduleClearFeedback(slotIndex);
+      setSelectedSlot(null);
+      setWrongPick(null);
     },
-    [narrative, pool, slots]
+    [narrative, selectedSlot]
   );
-
-  function scheduleClearFeedback(slotIndex: number) {
-    const existing = feedbackTimeouts.current[slotIndex];
-    if (existing) clearTimeout(existing);
-    feedbackTimeouts.current[slotIndex] = setTimeout(() => {
-      setSlots((prev) => {
-        const next = [...prev];
-        const current = next[slotIndex];
-        if (current && current.feedback) {
-          next[slotIndex] = {
-            character: current.character,
-            anime: current.anime,
-          };
-        }
-        return next;
-      });
-    }, 700);
-  }
 
   function removeFromSlot(slotIndex: number) {
     setSlots((prev) => {
-      const card = prev[slotIndex];
-      if (!card) return prev;
-      setPool((p) =>
-        addToPool(p, { character: card.character, anime: card.anime })
-      );
       const next = [...prev];
       next[slotIndex] = null;
       return next;
@@ -273,7 +172,7 @@ export default function FinalPage() {
         <ArrowLeft className="h-4 w-4" /> Retour à la carte
       </Link>
 
-      {/* Hero with sunburst */}
+      {/* Hero */}
       <section className="relative mb-6 overflow-hidden rounded-3xl sunburst-bg-soft sunburst-fade-bottom p-6 text-center sm:p-10">
         <Sakura className="pointer-events-none absolute left-4 top-4 h-6 w-6 text-sakura-dark/70" aria-hidden />
         <Sakura className="pointer-events-none absolute right-6 top-8 h-5 w-5 text-sakura-dark/60" aria-hidden />
@@ -283,14 +182,12 @@ export default function FinalPage() {
             Plus qu&apos;une &eacute;tape&nbsp;!
           </h1>
           <p className="max-w-md text-sm text-mp-ink sm:text-base">
-            Reconstitue le mot secret. Fais glisser chaque personnage sur son
-            rôle narratif. Les lettres apparaîtront au fur et à mesure.
+            Pour chaque rôle, appuie sur la case et sélectionne le bon personnage. Les lettres apparaîtront au fur et à mesure.
           </p>
         </div>
       </section>
 
       <div className="mp-card p-5 sm:p-8">
-
         {loadErr && (
           <p className="mt-4 rounded-lg border border-mp-red/30 bg-mp-red/10 p-3 text-sm text-mp-red">
             {loadErr}
@@ -302,68 +199,33 @@ export default function FinalPage() {
             <span className="dot-spin" aria-hidden /> Chargement…
           </div>
         ) : (
-          <DndContext
-            sensors={sensors}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-          >
+          <>
             {/* Word preview */}
             <WordPreview slots={slots} narrative={narrative} />
 
-            {/* Drop slots */}
+            {/* Slots cliquables */}
             <section
               aria-label="Rôles narratifs à compléter"
-              className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2"
+              className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2"
             >
               {narrative.map((entry, idx) => (
-                <SlotDropZone
+                <SlotButton
                   key={entry.role}
                   index={idx}
                   role={entry.role}
-                  expectedLetter={entry.letter}
-                  card={slots[idx]}
-                  isCorrect={
-                    slots[idx] !== null &&
-                    slots[idx]!.character === entry.character
-                  }
+                  letter={entry.letter}
+                  placed={slots[idx]}
+                  onOpen={() => openPicker(idx)}
                   onRemove={() => removeFromSlot(idx)}
                 />
               ))}
             </section>
 
-            {/* Pool */}
-            <section
-              aria-label="Personnages à placer"
-              className="mt-8 rounded-2xl border-2 border-mp-sky/40 bg-mp-sky-soft/40 p-3 sm:p-4"
-            >
-              <h2 className="mb-3 font-display text-sm uppercase tracking-widest text-mp-coral">
-                Personnages recrutés ({pool.length})
-              </h2>
-              {pool.length === 0 ? (
-                <p className="py-4 text-center text-sm text-mp-ink-soft">
-                  Tous les personnages sont placés.
-                </p>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {pool.map((c) => (
-                    <DraggableCard
-                      key={cardId(c)}
-                      id={cardId(c)}
-                      card={c}
-                      variant="pool"
-                    />
-                  ))}
-                </div>
-              )}
-            </section>
-
-            {/* Drag overlay pour le retour visuel */}
-            <DragOverlay dropAnimation={null}>
-              {activeCard ? (
-                <CardSurface card={activeCard} dragging />
-              ) : null}
-            </DragOverlay>
-          </DndContext>
+            {/* Hint */}
+            <p className="mt-5 text-center text-xs text-mp-ink-soft sm:text-sm">
+              {slots.filter((s) => s !== null).length} / {narrative.length} personnages placés
+            </p>
+          </>
         )}
 
         {/* Zone de saisie finale */}
@@ -409,36 +271,23 @@ export default function FinalPage() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Picker modal */}
+      <AnimatePresence>
+        {selectedSlot !== null && data && (
+          <PickerModal
+            role={narrative[selectedSlot].role}
+            characters={allCharacters}
+            placedNames={placedCharacterNames}
+            currentSlotCharacter={slots[selectedSlot]?.character ?? null}
+            wrongPick={wrongPick?.slot === selectedSlot ? wrongPick.character : null}
+            onPick={handlePick}
+            onClose={closePicker}
+          />
+        )}
+      </AnimatePresence>
     </main>
   );
-}
-
-// ---------- Helpers ----------
-
-function cardId(c: CharacterCard): string {
-  return `pool-${c.character}`;
-}
-
-function findCardById(
-  id: string,
-  pool: CharacterCard[],
-  slots: SlotState[]
-): CharacterCard | null {
-  if (id.startsWith("pool-")) {
-    return pool.find((c) => cardId(c) === id) ?? null;
-  }
-  const m = id.match(/^slot-card-(\d+)$/);
-  if (m) {
-    const idx = Number(m[1]);
-    const s = slots[idx];
-    if (s) return { character: s.character, anime: s.anime };
-  }
-  return null;
-}
-
-function addToPool(pool: CharacterCard[], card: CharacterCard): CharacterCard[] {
-  if (pool.some((c) => c.character === card.character)) return pool;
-  return [...pool, card];
 }
 
 // ---------- Word preview ----------
@@ -447,11 +296,9 @@ function WordPreview({
   slots,
   narrative,
 }: {
-  slots: SlotState[];
+  slots: Placed[];
   narrative: NarrativeEntry[];
 }) {
-  // Groupe ANGEL BEATS = 5 + 5. Pour l'affichage, on insère un espace
-  // entre la 5e et la 6e lettre (correspond au nom ANGEL BEATS).
   const letters = narrative.map((entry, i) => {
     const placed = slots[i];
     const isCorrect = placed !== null && placed!.character === entry.character;
@@ -469,7 +316,11 @@ function WordPreview({
     >
       {letters.map((l, i) => (
         <span key={i} className="inline-flex items-center">
-          <span
+          <motion.span
+            key={`${i}-${l.filled}`}
+            initial={l.filled ? { scale: 0.6, opacity: 0 } : false}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 380, damping: 20 }}
             className={clsx(
               "flex h-10 w-9 items-center justify-center rounded-md border-2 font-display text-xl font-bold transition sm:h-12 sm:w-10 sm:text-2xl",
               l.filled
@@ -478,51 +329,40 @@ function WordPreview({
             )}
           >
             {l.char}
-          </span>
-          {i === 4 && (
-            <span className="w-2 sm:w-3" aria-hidden="true" />
-          )}
+          </motion.span>
+          {i === 4 && <span className="w-2 sm:w-3" aria-hidden="true" />}
         </span>
       ))}
     </div>
   );
 }
 
-// ---------- Slot drop zone ----------
+// ---------- Slot button ----------
 
-function SlotDropZone({
+function SlotButton({
   index,
   role,
-  expectedLetter,
-  card,
-  isCorrect,
+  letter,
+  placed,
+  onOpen,
   onRemove,
 }: {
   index: number;
   role: string;
-  expectedLetter: string;
-  card: SlotState;
-  isCorrect: boolean;
+  letter: string;
+  placed: Placed;
+  onOpen: () => void;
   onRemove: () => void;
 }) {
-  const { isOver, setNodeRef } = useDroppable({ id: `slot-${index}` });
-  const feedback = card?.feedback;
+  const isFilled = placed !== null;
 
   return (
     <div
-      ref={setNodeRef}
       className={clsx(
         "relative rounded-2xl border-2 bg-white p-3 pt-4 shadow-mp-card transition-colors sm:p-4 sm:pt-5",
-        card
-          ? isCorrect
-            ? feedback === "ok"
-              ? "border-mp-red"
-              : "border-mp-coral/50"
-            : "border-mp-sky/50"
-          : isOver
-            ? "border-mp-red bg-mp-red/5"
-            : "border-dashed border-mp-sky/60",
-        feedback === "ko" && "border-mp-red bg-mp-red/10"
+        isFilled
+          ? "border-mp-red/80 bg-mp-red/5"
+          : "border-dashed border-mp-sky/60"
       )}
     >
       <span
@@ -531,127 +371,203 @@ function SlotDropZone({
       >
         {index + 1}
       </span>
-      <div className="mb-2 flex items-baseline justify-between gap-3">
-        <div className="pl-4 text-xs font-semibold uppercase tracking-widest text-mp-ink-soft">
+      <div className="mb-2 flex items-baseline justify-between gap-3 pl-4">
+        <div className="text-xs font-semibold uppercase tracking-widest text-mp-ink-soft">
           {role}
         </div>
-        {isCorrect && (
+        {isFilled && (
           <span className="font-display text-2xl text-mp-red sm:text-3xl">
-            {expectedLetter}
+            {letter}
           </span>
         )}
       </div>
-      {card ? (
-        <DraggableSlotCard index={index} card={card} onRemove={onRemove} />
+
+      {isFilled ? (
+        <div className="flex items-center gap-2">
+          <div className="flex min-w-0 flex-1 items-center gap-3 rounded-xl bg-white p-2">
+            <InitialBubble name={placed!.character} correct />
+            <div className="min-w-0">
+              <div className="truncate text-sm font-semibold text-mp-ink sm:text-base">
+                {placed!.character}
+              </div>
+              <div className="truncate text-xs text-mp-ink-soft">
+                {placed!.anime}
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onRemove}
+            aria-label="Retirer ce personnage"
+            className="rounded-full p-1.5 text-mp-ink-soft hover:bg-mp-ink/5 hover:text-mp-ink"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </button>
+        </div>
       ) : (
-        <div className="flex h-[72px] items-center justify-center text-sm italic text-mp-ink-soft/80">
-          Dépose ici le personnage
-        </div>
+        <button
+          type="button"
+          onClick={onOpen}
+          className="flex min-h-[60px] w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-mp-sky/50 bg-mp-sky-soft/30 px-3 py-2 text-sm font-semibold text-mp-red transition hover:border-mp-red hover:bg-mp-red/5 active:scale-[0.98]"
+        >
+          <Sparkles className="h-4 w-4" aria-hidden />
+          Choisir un personnage
+        </button>
       )}
     </div>
   );
 }
 
-// ---------- Draggables ----------
+// ---------- Picker modal ----------
 
-function DraggableCard({
-  id,
-  card,
-  variant,
+function PickerModal({
+  role,
+  characters,
+  placedNames,
+  currentSlotCharacter,
+  wrongPick,
+  onPick,
+  onClose,
 }: {
-  id: string;
-  card: CharacterCard;
-  variant: "pool" | "slot";
+  role: string;
+  characters: CharacterCard[];
+  placedNames: Set<string>;
+  currentSlotCharacter: string | null;
+  wrongPick: string | null;
+  onPick: (c: CharacterCard) => void;
+  onClose: () => void;
 }) {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id });
-
   return (
-    <button
-      ref={setNodeRef}
-      type="button"
-      aria-label={`Personnage ${card.character}, ${card.anime}. Glisser vers un rôle narratif.`}
-      {...attributes}
-      {...listeners}
-      className={clsx(
-        "touch-none select-none rounded-xl border-2 px-3 py-2 text-left shadow-sm transition active:scale-95",
-        variant === "pool"
-          ? "border-mp-sky/50 bg-white hover:border-mp-red"
-          : "border-mp-orange/40 bg-white/95",
-        isDragging && "opacity-30"
-      )}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-end justify-center bg-mp-ink/60 p-0 sm:items-center sm:p-4"
+      onClick={onClose}
     >
-      <CardSurface card={card} />
-    </button>
-  );
-}
-
-function DraggableSlotCard({
-  index,
-  card,
-  onRemove,
-}: {
-  index: number;
-  card: Exclude<SlotState, null>;
-  onRemove: () => void;
-}) {
-  return (
-    <div className="flex items-center gap-2">
-      <div className="min-w-0 flex-1">
-        <DraggableCard
-          id={`slot-card-${index}`}
-          card={{ character: card.character, anime: card.anime }}
-          variant="slot"
-        />
-      </div>
-      <button
-        type="button"
-        onClick={onRemove}
-        aria-label="Retirer ce personnage"
-        className="rounded-full p-1.5 text-mp-ink-soft hover:bg-mp-ink/5 hover:text-mp-ink"
+      <motion.div
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 40, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 320, damping: 30 }}
+        onClick={(e) => e.stopPropagation()}
+        className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-white p-5 shadow-mp-strong sm:rounded-3xl"
+        style={{ paddingBottom: `calc(1.25rem + env(safe-area-inset-bottom))` }}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Choisir le personnage pour ${role}`}
       >
-        <RotateCcw className="h-4 w-4" />
-      </button>
-    </div>
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-widest text-mp-coral">
+              Qui est…
+            </div>
+            <h2 className="mt-1 font-display italic text-2xl text-mp-red sm:text-3xl">
+              {role}&nbsp;?
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Fermer"
+            className="rounded-full p-2 text-mp-ink-soft hover:bg-mp-ink/5 hover:text-mp-ink"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          {characters.map((c) => {
+            const isPlaced = placedNames.has(c.character) && c.character !== currentSlotCharacter;
+            const isWrong = wrongPick === c.character;
+
+            return (
+              <motion.button
+                key={c.character}
+                type="button"
+                onClick={() => !isPlaced && onPick(c)}
+                disabled={isPlaced}
+                animate={
+                  isWrong
+                    ? { x: [0, -8, 8, -8, 8, -4, 4, 0] }
+                    : { x: 0 }
+                }
+                transition={{ duration: 0.5 }}
+                className={clsx(
+                  "flex items-center gap-3 rounded-xl border-2 p-3 text-left transition",
+                  isPlaced && "cursor-not-allowed opacity-40",
+                  !isPlaced && !isWrong && "border-mp-sky/40 bg-white hover:border-mp-red hover:bg-mp-red/5 active:scale-[0.98]",
+                  isWrong && "border-mp-red bg-mp-red/15 shadow-[0_0_0_4px_rgba(220,30,68,0.15)]"
+                )}
+              >
+                <InitialBubble name={c.character} wrong={isWrong} />
+                <div className="min-w-0 flex-1">
+                  <div className={clsx(
+                    "truncate text-sm font-semibold sm:text-base",
+                    isWrong ? "text-mp-red" : "text-mp-ink"
+                  )}>
+                    {c.character}
+                  </div>
+                  <div className="truncate text-xs text-mp-ink-soft">
+                    {c.anime}
+                  </div>
+                </div>
+                {isPlaced && (
+                  <Check className="h-4 w-4 shrink-0 text-mp-red" aria-label="Déjà placé" />
+                )}
+                {isWrong && (
+                  <X className="h-5 w-5 shrink-0 text-mp-red" aria-label="Mauvais choix" />
+                )}
+              </motion.button>
+            );
+          })}
+        </div>
+
+        <AnimatePresence>
+          {wrongPick && (
+            <motion.p
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="mt-4 rounded-xl border border-mp-red/30 bg-mp-red/10 p-3 text-center text-sm font-semibold text-mp-red"
+              role="alert"
+            >
+              Ce n&apos;est pas le bon. Essaie avec un autre personnage.
+            </motion.p>
+          )}
+        </AnimatePresence>
+
+        <p className="mt-4 text-center text-xs text-mp-ink-soft">
+          Besoin d&apos;aide&nbsp;? Reviens sur le stand Manga Paradise.
+        </p>
+      </motion.div>
+    </motion.div>
   );
 }
 
-// ---------- Card surface (shared visual) ----------
+// ---------- Initial bubble ----------
 
-function CardSurface({
-  card,
-  dragging,
+function InitialBubble({
+  name,
+  correct,
+  wrong,
 }: {
-  card: CharacterCard;
-  dragging?: boolean;
-}): ReactNode {
-  return (
-    <div
-      className={clsx(
-        "flex items-center gap-3",
-        dragging &&
-          "rounded-xl border-2 border-mp-red bg-white p-2 shadow-mp"
-      )}
-    >
-      <CharacterSilhouette name={card.character} />
-      <div className="min-w-0">
-        <div className="truncate text-sm font-semibold text-mp-ink sm:text-base">
-          {card.character}
-        </div>
-        <div className="truncate text-xs text-mp-ink-soft">
-          {card.anime}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CharacterSilhouette({ name }: { name: string }) {
-  // Silhouette placeholder simple : initiale sur disque neutre.
+  name: string;
+  correct?: boolean;
+  wrong?: boolean;
+}) {
   const letter = (name.match(/[A-Za-zÀ-ÿ]/)?.[0] ?? "?").toUpperCase();
   return (
     <div
       aria-hidden
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-mp-sky/50 bg-white font-display text-base font-bold text-mp-ink sm:h-11 sm:w-11"
+      className={clsx(
+        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 font-display text-base font-bold sm:h-11 sm:w-11",
+        wrong
+          ? "border-mp-red bg-mp-red/10 text-mp-red"
+          : correct
+            ? "border-mp-red bg-white text-mp-red"
+            : "border-mp-sky/50 bg-white text-mp-ink"
+      )}
     >
       {letter}
     </div>

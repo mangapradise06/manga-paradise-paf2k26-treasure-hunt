@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ShareButtons } from "@/components/ShareButtons";
-import { Sparkles } from "lucide-react";
+import { Sparkles, ArrowUpRight, Rocket } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Sakura } from "@/components/icons/Sakura";
 import { Clouds } from "@/components/icons/Clouds";
@@ -139,6 +139,34 @@ export default function CongratsPage() {
               réutiliser dans le formulaire pour qu&apos;on te retrouve.
             </p>
           )}
+        </div>
+
+        {/* CTA app Manga Paradise */}
+        <div className="mt-6 overflow-hidden rounded-3xl border-2 border-mp-red/30 bg-gradient-to-br from-mp-red/5 via-mp-coral/10 to-mp-orange/10 p-6 sm:p-8">
+          <div className="flex flex-col items-center gap-4 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-mp-red text-white shadow-mp motion-safe:animate-torii-bounce">
+              <Rocket className="h-7 w-7" aria-hidden />
+            </div>
+            <h3 className="font-display italic text-2xl text-mp-red sm:text-3xl">
+              &Ccedil;a t&apos;a plu&nbsp;?
+            </h3>
+            <p className="max-w-lg text-sm text-mp-ink sm:text-base">
+              Si tu as kiffé la chasse, ne rate pas la suite&nbsp;: <strong>Manga Paradise</strong>, l&apos;appli dédiée à la pop culture japonaise, arrive bientôt. Pour plus d&apos;infos sur le projet, clique sur le bouton ci-dessous.
+            </p>
+            <a
+              href="https://www.manga-paradise-app.fr/"
+              target="_blank"
+              rel="noopener"
+              className="btn-gradient inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold text-white shadow-mp-strong transition hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <Sparkles className="h-4 w-4" aria-hidden />
+              Découvrir Manga Paradise
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
+            </a>
+            <p className="text-xs text-mp-ink-soft">
+              manga-paradise-app.fr
+            </p>
+          </div>
         </div>
 
         <div className="mt-8 text-center">
