@@ -13,15 +13,15 @@ export function ProgressBar({ value, total = 10, className }: Props) {
   const pct = Math.min(100, Math.max(0, (value / total) * 100));
   return (
     <div className={clsx("w-full", className)}>
-      <div className="mb-1 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-parchment-ink/70">
+      <div className="mb-1 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-mp-ink-soft">
         <span>Progression</span>
-        <span className="font-display text-base text-treasure-red">
+        <span className="font-display text-base text-mp-red">
           {value} / {total}
         </span>
       </div>
-      <div className="relative h-3 w-full overflow-hidden rounded-full border border-parchment-ink/20 bg-parchment-light/70">
+      <div className="relative h-3 w-full overflow-hidden rounded-full border border-mp-sky/40 bg-mp-sky-soft/60">
         <motion.div
-          className="h-full bg-gradient-to-r from-treasure-gold via-[#ebc65c] to-treasure-gold"
+          className="h-full bg-gradient-to-r from-mp-coral via-mp-orange to-mp-orange"
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
           transition={{ type: "spring", stiffness: 120, damping: 22 }}

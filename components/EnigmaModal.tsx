@@ -133,7 +133,7 @@ export function EnigmaModal({ open, onClose, stand, loading, onValidated }: Prop
       }
     >
       {loading || !stand ? (
-        <div className="flex items-center gap-3 py-10 text-parchment-ink/70">
+        <div className="flex items-center gap-3 py-10 text-mp-ink-soft">
           <span className="dot-spin" aria-hidden /> Chargement de l&apos;énigme…
         </div>
       ) : success && revealStandName ? (
@@ -147,33 +147,33 @@ export function EnigmaModal({ open, onClose, stand, loading, onValidated }: Prop
           aria-live="polite"
         >
           <motion.div
-            initial={{ scale: 0.4, opacity: 0 }}
+            initial={{ scale: 0.3, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 260, damping: 16 }}
-            className="flex h-20 w-20 items-center justify-center rounded-full bg-treasure-green/15 text-treasure-green shadow-treasure"
+            transition={{ type: "spring", stiffness: 280, damping: 14 }}
+            className="flex h-20 w-20 items-center justify-center rounded-full bg-[#437A22] text-white shadow-mp"
             aria-hidden
           >
-            <CheckCircle2 className="h-12 w-12" strokeWidth={2.2} />
+            <CheckCircle2 className="h-12 w-12" strokeWidth={2.4} />
           </motion.div>
           <div>
-            <h3 className="font-display text-2xl text-treasure-red sm:text-3xl">
-              Bravo !
+            <h3 className="font-display italic text-3xl text-mp-red sm:text-4xl">
+              Bravo !
             </h3>
-            <p className="mt-2 text-sm text-parchment-ink/80 sm:text-base">
-              Ce personnage se trouvait au stand :
+            <p className="mt-3 text-sm text-mp-ink sm:text-base">
+              Ce personnage se trouvait au stand :
             </p>
-            <p className="mt-1 font-display text-xl text-parchment-ink sm:text-2xl">
+            <p className="mt-1 font-display italic text-2xl font-bold text-mp-red sm:text-3xl">
               {revealStandName}
             </p>
-            <p className="mt-3 text-sm text-parchment-ink/70">
-              Tu peux maintenant passer à l&apos;étape suivante.
-            </p>
+          </div>
+          <div className="w-full rounded-2xl border border-mp-sky/40 bg-white p-3 text-sm text-mp-ink-soft">
+            Tu peux maintenant passer à l&apos;étape suivante.
           </div>
           <Button
             type="button"
-            variant="primary"
+            variant="gradient"
             onClick={continueFromReveal}
-            className="mt-2 w-full sm:w-auto"
+            className="mt-2 w-full px-6 py-3 text-base sm:w-auto"
           >
             <Sparkles className="h-4 w-4" />
             {pendingResult?.complete ? "Voir l'épreuve finale" : "Étape suivante"}
@@ -188,13 +188,13 @@ export function EnigmaModal({ open, onClose, stand, loading, onValidated }: Prop
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.25 }}
-              className="rounded-xl border border-parchment-ink/15 bg-parchment-light/70 p-4"
+              className="rounded-xl border border-mp-sky/30 bg-mp-sky-soft/60 p-4"
             >
-              <div className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-parchment-ink/60">
-                <Lightbulb className="h-4 w-4 text-treasure-gold" />
+              <div className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-mp-ink-soft">
+                <Lightbulb className="h-4 w-4 text-mp-orange" />
                 Indice {revealed} / 2
               </div>
-              <p className="text-parchment-ink">
+              <p className="text-mp-ink">
                 {revealed === 1 ? stand.hint_1 : stand.hint_2}
               </p>
             </motion.div>
@@ -204,7 +204,7 @@ export function EnigmaModal({ open, onClose, stand, loading, onValidated }: Prop
             <button
               type="button"
               onClick={() => setRevealed(2)}
-              className="inline-flex items-center gap-1 text-sm font-semibold text-treasure-red hover:underline"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-mp-red hover:underline"
             >
               <Compass className="h-4 w-4" />
               Indice suivant →
@@ -212,7 +212,7 @@ export function EnigmaModal({ open, onClose, stand, loading, onValidated }: Prop
           )}
 
           {alreadyDone ? (
-            <div className="rounded-xl border border-treasure-green/30 bg-treasure-green/10 p-4 text-sm text-treasure-green">
+            <div className="rounded-xl border border-mp-red/30 bg-mp-red/10 p-4 text-sm text-mp-red">
               Cette étape est déjà validée. Retourne sur la carte pour continuer.
               <div className="mt-3">
                 <Button variant="ghost" onClick={onClose}>

@@ -86,29 +86,52 @@ export default function AdminDashboard() {
     typeof window !== "undefined" ? window.location.origin : "";
 
   return (
-    <main className="mx-auto max-w-6xl px-5 py-8">
-      <header className="mb-6 flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-parchment-ink/60">
-            Dashboard organisateur
-          </p>
-          <h1 className="font-display text-3xl text-treasure-red">PAF 2K26</h1>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="ghost" onClick={fetchAll} loading={loading}>
-            <RefreshCcw className="h-4 w-4" /> Rafraîchir
-          </Button>
-          <a href="/api/admin/export" className="btn-gold">
-            <Download className="h-4 w-4" /> Exporter CSV
-          </a>
-          <Button variant="ghost" onClick={() => setQrOpen((o) => !o)}>
-            <QrCode className="h-4 w-4" /> QR code
-          </Button>
-          <Button variant="ghost" onClick={logout}>
-            <LogOut className="h-4 w-4" /> Déconnexion
-          </Button>
+    <main className="min-h-screen bg-mp-sky-soft/30">
+      {/* Red banner header */}
+      <header className="bg-mp-red text-white shadow-mp">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-5">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/70">
+              Dashboard organisateur
+            </p>
+            <h1 className="font-display italic text-2xl leading-tight sm:text-3xl">
+              PAF 2K26 — Manga Paradise
+            </h1>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={fetchAll}
+              disabled={loading}
+              className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/20 disabled:opacity-60"
+            >
+              <RefreshCcw className="h-4 w-4" /> Rafraîchir
+            </button>
+            <a
+              href="/api/admin/export"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-semibold text-mp-red transition hover:bg-white/90"
+            >
+              <Download className="h-4 w-4" /> Exporter CSV
+            </a>
+            <button
+              type="button"
+              onClick={() => setQrOpen((o) => !o)}
+              className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/20"
+            >
+              <QrCode className="h-4 w-4" /> QR code
+            </button>
+            <button
+              type="button"
+              onClick={logout}
+              className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/20"
+            >
+              <LogOut className="h-4 w-4" /> Déconnexion
+            </button>
+          </div>
         </div>
       </header>
+
+      <div className="mx-auto max-w-6xl px-5 py-8">
 
       {qrOpen && (
         <Card className="mb-6 text-center">
@@ -119,7 +142,7 @@ export default function AdminDashboard() {
             <img
               src="/api/admin/qr"
               alt="QR code"
-              className="h-64 w-64 rounded-lg border border-parchment-ink/20"
+              className="h-64 w-64 rounded-lg border border-mp-sky/40"
             />
             <a
               href="/api/admin/qr"
@@ -128,7 +151,7 @@ export default function AdminDashboard() {
             >
               Télécharger le PNG
             </a>
-            <p className="text-xs text-parchment-ink/60">
+            <p className="text-xs text-mp-ink-soft">
               Pointe vers : {site || "(site url)"}
             </p>
           </div>
@@ -162,17 +185,17 @@ export default function AdminDashboard() {
             const pct = total ? Math.round((s.count / total) * 100) : 0;
             return (
               <li key={s.standId} className="flex items-center gap-3">
-                <span className="w-6 text-right font-display text-sm text-parchment-ink/70">
+                <span className="w-6 text-right font-display text-sm text-mp-ink-soft">
                   {s.order}
                 </span>
                 <span className="flex-1 truncate text-sm">{s.name}</span>
-                <div className="relative h-2 w-40 overflow-hidden rounded-full bg-parchment-dark/40">
+                <div className="relative h-2 w-40 overflow-hidden rounded-full bg-mp-sky/40">
                   <div
-                    className="h-full bg-treasure-green"
+                    className="h-full bg-gradient-to-r from-mp-coral to-mp-orange"
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <span className="w-16 text-right text-sm tabular-nums text-parchment-ink/70">
+                <span className="w-16 text-right text-sm tabular-nums text-mp-ink-soft">
                   {s.count} / {total}
                 </span>
               </li>
@@ -188,7 +211,7 @@ export default function AdminDashboard() {
         </CardSub>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full min-w-[720px] text-sm">
-            <thead className="border-b border-parchment-ink/15 text-left text-xs uppercase tracking-wider text-parchment-ink/60">
+            <thead className="border-b border-mp-sky/30 text-left text-xs uppercase tracking-wider text-mp-ink-soft">
               <tr>
                 <th className="py-2">Pseudo</th>
                 <th className="py-2">Nom</th>
@@ -203,13 +226,13 @@ export default function AdminDashboard() {
               {rows.map((r) => (
                 <tr
                   key={r.id}
-                  className="border-b border-parchment-ink/10 last:border-none"
+                  className="border-b border-mp-sky/30 last:border-none"
                 >
                   <td className="py-2 font-semibold">{r.pseudo}</td>
                   <td className="py-2">
                     {r.first_name} {r.last_name}
                   </td>
-                  <td className="py-2 text-parchment-ink/80">{r.email}</td>
+                  <td className="py-2 text-mp-ink">{r.email}</td>
                   <td className="py-2">{r.newsletter_consent ? "Oui" : "—"}</td>
                   <td className="py-2 tabular-nums">{r.progress_count}/10</td>
                   <td className="py-2">
@@ -219,7 +242,7 @@ export default function AdminDashboard() {
                   </td>
                   <td className="py-2">
                     {r.is_winner_eligible ? (
-                      <span className="chip border-treasure-green/30 text-treasure-green">
+                      <span className="chip border-mp-red/30 text-mp-red">
                         Oui
                       </span>
                     ) : (
@@ -232,7 +255,7 @@ export default function AdminDashboard() {
                 <tr>
                   <td
                     colSpan={7}
-                    className="py-6 text-center text-parchment-ink/60"
+                    className="py-6 text-center text-mp-ink-soft"
                   >
                     Aucun participant pour le moment.
                   </td>
@@ -258,6 +281,7 @@ export default function AdminDashboard() {
           </Button>
         </div>
       </Card>
+      </div>
     </main>
   );
 }
@@ -274,15 +298,15 @@ function StatCard({
   return (
     <div className="card flex items-center gap-3">
       {icon && (
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-treasure-red/10 text-treasure-red">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-mp-red/10 text-mp-red">
           {icon}
         </div>
       )}
       <div className="min-w-0">
-        <p className="truncate text-xs uppercase tracking-widest text-parchment-ink/60">
+        <p className="truncate text-xs uppercase tracking-widest text-mp-ink-soft">
           {label}
         </p>
-        <p className="font-display text-2xl text-parchment-ink">{value}</p>
+        <p className="font-display text-2xl text-mp-ink">{value}</p>
       </div>
     </div>
   );

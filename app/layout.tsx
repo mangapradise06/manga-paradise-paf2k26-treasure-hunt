@@ -1,24 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import { Cinzel, Inter } from "next/font/google";
+import { Barlow_Condensed, Poppins } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/Toast";
 
-const cinzel = Cinzel({
+const barlow = Barlow_Condensed({
   subsets: ["latin"],
-  variable: "--font-cinzel",
-  weight: ["400", "600", "700", "800"],
+  weight: ["800"],
+  style: ["italic"],
+  variable: "--font-barlow",
   display: "swap",
 });
 
-const inter = Inter({
+const poppins = Poppins({
   subsets: ["latin"],
-  variable: "--font-inter",
   weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Chasse au Trésor PAF 2K26 — Manga Paradise",
+  title: "Chasse au trésor — Manga Paradise × PAF 2026",
   description:
     "Participe à la chasse au trésor Manga Paradise au Play Azure Festival 2026 et tente de gagner une figurine officielle.",
   manifest: "/manifest.json",
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#c0392b",
+  themeColor: "#DC1E44",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -47,7 +48,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" className={`${cinzel.variable} ${inter.variable}`}>
+    <html lang="fr" className={`${barlow.variable} ${poppins.variable}`}>
       <body className="min-h-screen antialiased">
         <ToastProvider>{children}</ToastProvider>
       </body>

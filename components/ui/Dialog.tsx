@@ -26,14 +26,12 @@ export function Dialog({
 }: DialogProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Focus trap minimaliste + ESC
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
-    // focus initial
     const t = setTimeout(() => {
       panelRef.current?.focus();
     }, 20);
@@ -56,7 +54,7 @@ export function Dialog({
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="absolute inset-0 bg-parchment-ink/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-mp-ink/60 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -74,30 +72,39 @@ export function Dialog({
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
             transition={{ type: "spring", damping: 24, stiffness: 280 }}
             className={clsx(
-              "parchment-panel relative z-10 w-full max-w-lg overflow-hidden p-6 outline-none sm:p-8",
+              "mp-card relative z-10 w-full max-w-lg overflow-hidden p-0 outline-none",
               className
             )}
           >
-            <button
-              aria-label={closeLabel}
-              onClick={onClose}
-              className="absolute right-3 top-3 rounded-full p-1.5 text-parchment-ink/60 hover:bg-parchment-ink/10 hover:text-parchment-ink"
-            >
-              <X className="h-5 w-5" />
-            </button>
             {(title || subtitle) && (
-              <div className="mb-4 pr-6">
+              <div className="relative bg-gradient-to-r from-mp-coral via-mp-orange to-mp-orange px-6 py-5 text-white sm:px-8 sm:py-6">
+                <button
+                  aria-label={closeLabel}
+                  onClick={onClose}
+                  className="absolute right-3 top-3 rounded-full p-1.5 text-white/90 hover:bg-white/20"
+                >
+                  <X className="h-5 w-5" />
+                </button>
                 {title && (
-                  <h2 className="font-display text-xl text-treasure-red sm:text-2xl">
+                  <h2 className="pr-8 font-display italic text-xl text-white sm:text-2xl drop-shadow-[0_2px_0_rgba(179,23,57,0.35)]">
                     {title}
                   </h2>
                 )}
                 {subtitle && (
-                  <p className="mt-1 text-sm text-parchment-ink/70">{subtitle}</p>
+                  <p className="mt-1 text-sm text-white/90">{subtitle}</p>
                 )}
               </div>
             )}
-            {children}
+            {!title && !subtitle && (
+              <button
+                aria-label={closeLabel}
+                onClick={onClose}
+                className="absolute right-3 top-3 z-10 rounded-full p-1.5 text-mp-ink-soft hover:bg-mp-ink/10 hover:text-mp-ink"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            )}
+            <div className="p-6 sm:p-8">{children}</div>
           </motion.div>
         </motion.div>
       )}

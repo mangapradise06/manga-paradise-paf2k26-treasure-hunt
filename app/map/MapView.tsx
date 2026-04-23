@@ -97,7 +97,7 @@ export default function MapView({ children }: { children?: React.ReactNode }) {
   if (error) {
     return (
       <main className="mx-auto max-w-xl px-5 py-10 text-center">
-        <p className="text-treasure-red">{error}</p>
+        <p className="text-mp-red">{error}</p>
         <button onClick={load} className="btn-ghost mt-4">
           Réessayer
         </button>
@@ -133,10 +133,10 @@ export default function MapView({ children }: { children?: React.ReactNode }) {
           <button
             type="button"
             onClick={() => setConfirmOpen(true)}
-            className="inline-flex items-center gap-2 rounded-full border border-parchment-ink/20 bg-parchment-light/60 px-4 py-2 text-xs text-parchment-ink/70 transition hover:border-parchment-ink/40 hover:text-parchment-ink"
+            className="inline-flex items-center gap-2 rounded-full border-2 border-mp-red bg-transparent px-4 py-2 text-xs font-semibold text-mp-red transition hover:bg-mp-red/5"
           >
             <RotateCcw className="h-3.5 w-3.5" aria-hidden />
-            🔄 Tu as un bug ? Recommencer la chasse
+            Tu as un bug ? Recommencer la chasse
           </button>
         </section>
       )}
@@ -148,7 +148,7 @@ export default function MapView({ children }: { children?: React.ReactNode }) {
         subtitle="Cette action efface ta progression et ne peut être utilisée qu'une seule fois."
       >
         <div className="space-y-4">
-          <p className="text-sm text-parchment-ink/80">
+          <p className="text-sm text-mp-ink">
             Es-tu sûr ? Toutes tes étapes validées et tes essais seront remis à
             zéro. Ton compte reste le même, tu repartiras de l&apos;étape 1.
           </p>

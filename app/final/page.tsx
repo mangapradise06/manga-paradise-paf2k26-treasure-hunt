@@ -24,10 +24,11 @@ import {
 } from "@dnd-kit/core";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
-import { ArrowLeft, RotateCcw, Scroll, Sparkles } from "lucide-react";
+import { ArrowLeft, RotateCcw, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { useToast } from "@/components/Toast";
+import { ToriiIcon } from "@/components/icons/ToriiIcon";
+import { Sakura } from "@/components/icons/Sakura";
 
 // ----- Types -----
 
@@ -264,35 +265,40 @@ export default function FinalPage() {
   // ----- Render -----
 
   return (
-    <main className="mx-auto max-w-3xl px-4 pb-24 pt-6 sm:px-5 sm:py-12">
+    <main className="relative mx-auto max-w-3xl px-4 pb-24 pt-6 sm:px-5 sm:py-12">
       <Link
         href="/map"
-        className="mb-4 inline-flex items-center gap-1 text-sm text-parchment-ink/70 hover:text-parchment-ink"
+        className="mb-4 inline-flex items-center gap-1 text-sm text-mp-ink-soft hover:text-mp-ink"
       >
         <ArrowLeft className="h-4 w-4" /> Retour à la carte
       </Link>
 
-      <div className="parchment-panel p-5 sm:p-8">
-        <div className="mb-3 flex items-center gap-3">
-          <Scroll className="h-7 w-7 text-treasure-gold" />
-          <h1 className="font-display text-2xl text-treasure-red sm:text-3xl">
-            Épreuve finale
+      {/* Hero with sunburst */}
+      <section className="relative mb-6 overflow-hidden rounded-3xl sunburst-bg-soft sunburst-fade-bottom p-6 text-center sm:p-10">
+        <Sakura className="pointer-events-none absolute left-4 top-4 h-6 w-6 text-sakura-dark/70" aria-hidden />
+        <Sakura className="pointer-events-none absolute right-6 top-8 h-5 w-5 text-sakura-dark/60" aria-hidden />
+        <div className="relative z-10 mx-auto flex max-w-xl flex-col items-center gap-3">
+          <ToriiIcon className="h-12 w-12 text-mp-red" aria-hidden />
+          <h1 className="font-display italic text-3xl leading-none text-white sm:text-5xl mp-title-outline">
+            Plus qu&apos;une &eacute;tape&nbsp;!
           </h1>
+          <p className="max-w-md text-sm text-mp-ink sm:text-base">
+            Reconstitue le mot secret. Fais glisser chaque personnage sur son
+            rôle narratif. Les lettres apparaîtront au fur et à mesure.
+          </p>
         </div>
-        <p className="text-sm text-parchment-ink/80 sm:text-base">
-          Plus qu&apos;une étape : reconstitue le mot secret. Fais glisser chaque
-          personnage sur son rôle narratif. Les lettres apparaîtront au fur et à
-          mesure.
-        </p>
+      </section>
+
+      <div className="mp-card p-5 sm:p-8">
 
         {loadErr && (
-          <p className="mt-4 rounded-lg border border-treasure-red/30 bg-treasure-red/5 p-3 text-sm text-treasure-red">
+          <p className="mt-4 rounded-lg border border-mp-red/30 bg-mp-red/10 p-3 text-sm text-mp-red">
             {loadErr}
           </p>
         )}
 
         {!data ? (
-          <div className="mt-6 flex items-center gap-2 text-parchment-ink/70">
+          <div className="mt-6 flex items-center gap-2 text-mp-ink-soft">
             <span className="dot-spin" aria-hidden /> Chargement…
           </div>
         ) : (
@@ -307,7 +313,7 @@ export default function FinalPage() {
             {/* Drop slots */}
             <section
               aria-label="Rôles narratifs à compléter"
-              className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2"
+              className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2"
             >
               {narrative.map((entry, idx) => (
                 <SlotDropZone
@@ -328,13 +334,13 @@ export default function FinalPage() {
             {/* Pool */}
             <section
               aria-label="Personnages à placer"
-              className="mt-8 rounded-2xl border-2 border-dashed border-parchment-ink/25 bg-parchment-light/40 p-3 sm:p-4"
+              className="mt-8 rounded-2xl border-2 border-mp-sky/40 bg-mp-sky-soft/40 p-3 sm:p-4"
             >
-              <h2 className="mb-3 font-display text-sm uppercase tracking-widest text-parchment-ink/70">
+              <h2 className="mb-3 font-display text-sm uppercase tracking-widest text-mp-coral">
                 Personnages recrutés ({pool.length})
               </h2>
               {pool.length === 0 ? (
-                <p className="py-4 text-center text-sm text-parchment-ink/60">
+                <p className="py-4 text-center text-sm text-mp-ink-soft">
                   Tous les personnages sont placés.
                 </p>
               ) : (
@@ -369,12 +375,12 @@ export default function FinalPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="mt-8 rounded-2xl border-2 border-treasure-gold/60 bg-treasure-gold/10 p-4 sm:p-5"
+              className="mt-8 rounded-2xl border-2 border-mp-coral/50 bg-gradient-to-br from-mp-coral/10 to-mp-orange/10 p-5 sm:p-6 text-center"
             >
-              <h2 className="font-display text-xl text-treasure-red">
+              <h2 className="font-display italic text-2xl text-mp-red sm:text-3xl">
                 Le mot secret
               </h2>
-              <p className="mt-1 text-sm text-parchment-ink/80">
+              <p className="mt-1 text-sm text-mp-ink">
                 Quel mot ces lettres forment-elles ?
               </p>
               <form
@@ -382,18 +388,19 @@ export default function FinalPage() {
                   e.preventDefault();
                   void submit();
                 }}
-                className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end"
+                className="mt-4 flex flex-col items-center gap-3"
               >
-                <Input
-                  label="Mot formé par les 10 lettres"
+                <input
+                  type="text"
                   placeholder="ANGEL BEATS"
                   value={guess}
                   onChange={(e) => setGuess(e.target.value)}
                   autoComplete="off"
                   spellCheck={false}
-                  className="flex-1"
+                  aria-label="Mot formé par les 10 lettres"
+                  className="w-full max-w-md rounded-2xl border-2 border-mp-sky/60 bg-white px-4 py-3 text-center font-display text-2xl font-bold uppercase tracking-widest text-mp-red placeholder:text-mp-ink-soft/40 focus-visible:border-mp-red focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mp-red/20 sm:text-3xl"
                 />
-                <Button type="submit" variant="gold" loading={submitting}>
+                <Button type="submit" variant="gradient" loading={submitting} className="w-full max-w-md">
                   <Sparkles className="h-4 w-4" />
                   Valider ma réponse
                 </Button>
@@ -466,8 +473,8 @@ function WordPreview({
             className={clsx(
               "flex h-10 w-9 items-center justify-center rounded-md border-2 font-display text-xl font-bold transition sm:h-12 sm:w-10 sm:text-2xl",
               l.filled
-                ? "border-treasure-gold bg-treasure-gold/20 text-treasure-red"
-                : "border-parchment-ink/20 bg-parchment-light/40 text-parchment-ink/30"
+                ? "border-mp-orange bg-mp-orange/20 text-mp-red"
+                : "border-mp-sky/40 bg-mp-white/70 text-mp-ink/30"
             )}
           >
             {l.char}
@@ -505,25 +512,31 @@ function SlotDropZone({
     <div
       ref={setNodeRef}
       className={clsx(
-        "relative rounded-2xl border-2 p-3 transition-colors sm:p-4",
+        "relative rounded-2xl border-2 bg-white p-3 pt-4 shadow-mp-card transition-colors sm:p-4 sm:pt-5",
         card
           ? isCorrect
             ? feedback === "ok"
-              ? "border-treasure-green bg-treasure-green/15"
-              : "border-treasure-gold/60 bg-parchment-light"
-            : "border-parchment-ink/30 bg-parchment-light"
+              ? "border-mp-red"
+              : "border-mp-coral/50"
+            : "border-mp-sky/50"
           : isOver
-            ? "border-treasure-red bg-treasure-red/10"
-            : "border-dashed border-parchment-ink/30 bg-parchment-light/40",
-        feedback === "ko" && "border-treasure-red bg-treasure-red/15"
+            ? "border-mp-red bg-mp-red/5"
+            : "border-dashed border-mp-sky/60",
+        feedback === "ko" && "border-mp-red bg-mp-red/10"
       )}
     >
+      <span
+        aria-hidden
+        className="absolute -left-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-mp-red font-display text-xs font-bold text-white shadow-mp"
+      >
+        {index + 1}
+      </span>
       <div className="mb-2 flex items-baseline justify-between gap-3">
-        <div className="text-xs font-semibold uppercase tracking-widest text-parchment-ink/60">
-          {index + 1}. {role}
+        <div className="pl-4 text-xs font-semibold uppercase tracking-widest text-mp-ink-soft">
+          {role}
         </div>
         {isCorrect && (
-          <span className="font-display text-2xl text-treasure-red sm:text-3xl">
+          <span className="font-display text-2xl text-mp-red sm:text-3xl">
             {expectedLetter}
           </span>
         )}
@@ -531,7 +544,7 @@ function SlotDropZone({
       {card ? (
         <DraggableSlotCard index={index} card={card} onRemove={onRemove} />
       ) : (
-        <div className="flex h-[72px] items-center justify-center text-sm italic text-parchment-ink/50">
+        <div className="flex h-[72px] items-center justify-center text-sm italic text-mp-ink-soft/80">
           Dépose ici le personnage
         </div>
       )}
@@ -562,8 +575,8 @@ function DraggableCard({
       className={clsx(
         "touch-none select-none rounded-xl border-2 px-3 py-2 text-left shadow-sm transition active:scale-95",
         variant === "pool"
-          ? "border-parchment-ink/25 bg-parchment-light hover:border-treasure-red"
-          : "border-treasure-gold/60 bg-parchment-light/95",
+          ? "border-mp-sky/50 bg-white hover:border-mp-red"
+          : "border-mp-orange/40 bg-white/95",
         isDragging && "opacity-30"
       )}
     >
@@ -594,7 +607,7 @@ function DraggableSlotCard({
         type="button"
         onClick={onRemove}
         aria-label="Retirer ce personnage"
-        className="rounded-full p-1.5 text-parchment-ink/60 hover:bg-parchment-ink/10 hover:text-parchment-ink"
+        className="rounded-full p-1.5 text-mp-ink-soft hover:bg-mp-ink/5 hover:text-mp-ink"
       >
         <RotateCcw className="h-4 w-4" />
       </button>
@@ -616,15 +629,15 @@ function CardSurface({
       className={clsx(
         "flex items-center gap-3",
         dragging &&
-          "rounded-xl border-2 border-treasure-red bg-parchment-light p-2 shadow-treasure"
+          "rounded-xl border-2 border-mp-red bg-white p-2 shadow-mp"
       )}
     >
       <CharacterSilhouette name={card.character} />
       <div className="min-w-0">
-        <div className="truncate text-sm font-semibold text-parchment-ink sm:text-base">
+        <div className="truncate text-sm font-semibold text-mp-ink sm:text-base">
           {card.character}
         </div>
-        <div className="truncate text-xs text-parchment-ink/60">
+        <div className="truncate text-xs text-mp-ink-soft">
           {card.anime}
         </div>
       </div>
@@ -638,7 +651,7 @@ function CharacterSilhouette({ name }: { name: string }) {
   return (
     <div
       aria-hidden
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-parchment-ink/25 bg-parchment-light font-display text-base font-bold text-parchment-ink sm:h-11 sm:w-11"
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-mp-sky/50 bg-white font-display text-base font-bold text-mp-ink sm:h-11 sm:w-11"
     >
       {letter}
     </div>

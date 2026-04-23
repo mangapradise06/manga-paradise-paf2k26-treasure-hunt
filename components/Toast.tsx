@@ -68,12 +68,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.98 }}
               transition={{ type: "spring", stiffness: 380, damping: 28 }}
-              className={`pointer-events-auto flex items-start gap-3 rounded-xl border p-3 text-sm shadow-lg backdrop-blur ${
+              className={`pointer-events-auto flex items-start gap-3 rounded-2xl border p-3 text-sm shadow-mp-card backdrop-blur ${
                 t.variant === "success"
-                  ? "border-treasure-green/30 bg-white/95 text-treasure-green"
+                  ? "border-mp-red/30 bg-mp-red/5 text-mp-red"
                   : t.variant === "error"
-                  ? "border-treasure-red/30 bg-white/95 text-treasure-red"
-                  : "border-parchment-ink/20 bg-white/95 text-parchment-ink"
+                  ? "border-mp-coral/40 bg-mp-coral/10 text-mp-red-dark"
+                  : "border-mp-sky/60 bg-mp-sky/40 text-mp-ink"
               }`}
             >
               <span className="mt-0.5 shrink-0">
@@ -87,12 +87,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               </span>
               <div className="flex-1">
                 {t.title && <div className="font-semibold">{t.title}</div>}
-                <div className="text-parchment-ink/80">{t.message}</div>
+                <div className="opacity-90">{t.message}</div>
               </div>
               <button
                 aria-label="Fermer"
                 onClick={() => dismiss(t.id)}
-                className="rounded p-1 text-parchment-ink/50 hover:text-parchment-ink"
+                className="rounded p-1 text-mp-ink-soft hover:text-mp-ink"
               >
                 <X className="h-4 w-4" />
               </button>

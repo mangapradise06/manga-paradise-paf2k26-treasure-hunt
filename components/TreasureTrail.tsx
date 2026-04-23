@@ -21,6 +21,8 @@ import {
   Trophy,
 } from "lucide-react";
 import clsx from "clsx";
+import { Sakura } from "./icons/Sakura";
+import { ToriiIcon } from "./icons/ToriiIcon";
 
 interface StandLite {
   id: number;
@@ -103,7 +105,7 @@ export function TrailSkeleton() {
   return (
     <>
       <div
-        className="sticky top-0 z-40 border-b border-parchment-ink/10 bg-parchment-light/80 backdrop-blur-md"
+        className="sticky top-0 z-40 border-b border-mp-sky/30 bg-white/80 backdrop-blur-md"
         style={{
           paddingTop: `calc(0.75rem + env(safe-area-inset-top))`,
           paddingBottom: "0.75rem",
@@ -111,13 +113,13 @@ export function TrailSkeleton() {
         aria-hidden
       >
         <div className="mx-auto max-w-2xl px-4">
-          <div className="h-3 w-28 animate-pulse rounded bg-parchment-ink/10" />
-          <div className="mt-2 h-7 w-56 animate-pulse rounded bg-parchment-ink/10" />
+          <div className="h-3 w-28 animate-pulse rounded bg-mp-ink/5" />
+          <div className="mt-2 h-7 w-56 animate-pulse rounded bg-mp-ink/5" />
           <div className="mt-3 flex gap-1">
             {Array.from({ length: 10 }).map((_, i) => (
               <div
                 key={i}
-                className="h-1.5 flex-1 animate-pulse rounded-full bg-parchment-ink/10"
+                className="h-1.5 flex-1 animate-pulse rounded-full bg-mp-ink/5"
               />
             ))}
           </div>
@@ -128,7 +130,7 @@ export function TrailSkeleton() {
           {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className="h-6 w-24 animate-pulse rounded-full bg-parchment-ink/10"
+              className="h-6 w-24 animate-pulse rounded-full bg-mp-ink/5"
             />
           ))}
         </div>
@@ -147,9 +149,9 @@ export function TrailSkeleton() {
             )}
           >
             <div className="flex flex-col items-center gap-3">
-              <div className="h-[72px] w-[72px] animate-pulse rounded-full bg-parchment-ink/10" />
-              <div className="h-2.5 w-20 animate-pulse rounded bg-parchment-ink/10" />
-              <div className="h-4 w-32 animate-pulse rounded bg-parchment-ink/10" />
+              <div className="h-[72px] w-[72px] animate-pulse rounded-full bg-mp-ink/5" />
+              <div className="h-2.5 w-20 animate-pulse rounded bg-mp-ink/5" />
+              <div className="h-4 w-32 animate-pulse rounded bg-mp-ink/5" />
             </div>
           </div>
         ))}
@@ -186,7 +188,7 @@ function StickyHeader({
   return (
     <header
       className={clsx(
-        "sticky top-0 z-40 border-b border-parchment-ink/15 bg-parchment-light/85 backdrop-blur-md transition-[padding] duration-200 ease-out",
+        "sticky top-0 z-40 border-b-2 border-mp-red/20 bg-white/90 backdrop-blur-md transition-[padding] duration-200 ease-out",
         compact ? "pb-2" : "pb-3"
       )}
       style={{
@@ -195,18 +197,23 @@ function StickyHeader({
     >
       <div className="mx-auto max-w-2xl px-4">
         {!compact && (
-          <p className="text-[11px] uppercase tracking-widest text-parchment-ink/60">
-            Ahoy, {pseudo} !
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-mp-coral">
+            Konnichiwa, {pseudo} !
           </p>
         )}
-        <h1
-          className={clsx(
-            "font-display text-treasure-red transition-[font-size] duration-200",
-            compact ? "text-lg leading-tight" : "text-2xl leading-tight sm:text-3xl"
-          )}
-        >
-          Ta carte au trésor
-        </h1>
+        <div className="flex items-baseline justify-between gap-3">
+          <h1
+            className={clsx(
+              "font-display italic text-mp-red transition-[font-size] duration-200",
+              compact ? "text-lg leading-tight" : "text-2xl leading-tight sm:text-3xl"
+            )}
+          >
+            Ta progression
+          </h1>
+          <span className="shrink-0 rounded-full bg-mp-red px-3 py-1 font-display text-sm font-bold text-white shadow-mp">
+            {doneCount}/{total}
+          </span>
+        </div>
         <SegmentedProgress
           doneCount={doneCount}
           total={total}
@@ -214,7 +221,7 @@ function StickyHeader({
           className="mt-2"
         />
         {!compact && (
-          <div className="mt-2 flex items-center gap-1.5 text-xs text-parchment-ink/70">
+          <div className="mt-2 flex items-center gap-1.5 text-xs text-mp-ink-soft">
             <Clock className="h-3.5 w-3.5" aria-hidden />
             <span aria-live="polite">
               {allDone
@@ -259,10 +266,10 @@ function SegmentedProgress({
               className={clsx(
                 "h-1.5 flex-1 rounded-full transition-colors duration-300 ease-out",
                 isDone
-                  ? "bg-treasure-red"
+                  ? "bg-gradient-to-r from-mp-coral to-mp-orange"
                   : isActive
-                    ? "bg-treasure-red/55"
-                    : "bg-parchment-ink/15",
+                    ? "bg-mp-red/20"
+                    : "bg-mp-sky/40",
                 isActive && !reducedMotion && "motion-safe:animate-pulse"
               )}
               aria-hidden
@@ -270,9 +277,6 @@ function SegmentedProgress({
           );
         })}
       </div>
-      <span className="ml-1 shrink-0 font-display text-sm text-treasure-red">
-        {doneCount}/{total}
-      </span>
     </div>
   );
 }
@@ -285,17 +289,17 @@ function Legend() {
       <ul className="flex flex-wrap items-center justify-center gap-2 text-xs">
         <li className="chip">
           <CheckCircle2
-            className="h-3.5 w-3.5 text-treasure-green"
+            className="h-3.5 w-3.5 text-mp-red"
             aria-hidden
           />
           Validée
         </li>
         <li className="chip">
-          <Flag className="h-3.5 w-3.5 text-treasure-red" aria-hidden />
+          <Flag className="h-3.5 w-3.5 text-mp-red" aria-hidden />
           En cours
         </li>
         <li className="chip">
-          <Lock className="h-3.5 w-3.5 text-parchment-ink/50" aria-hidden />
+          <Lock className="h-3.5 w-3.5 text-mp-ink-soft/80" aria-hidden />
           Verrouillée
         </li>
       </ul>
@@ -450,7 +454,7 @@ function TrailPath({
       <motion.path
         d={fullD}
         fill="none"
-        stroke="var(--treasure-red)"
+        stroke="var(--mp-red)"
         strokeWidth="1.2"
         strokeLinecap="round"
         vectorEffect="non-scaling-stroke"
@@ -550,7 +554,7 @@ function StationCircle({
 }) {
   const orderBadge = (
     <span
-      className="absolute -bottom-1 -right-1 flex h-6 min-w-[24px] items-center justify-center rounded-full border-2 border-parchment-light bg-parchment-ink px-1 font-display text-[10px] font-bold text-parchment-light"
+      className="absolute -bottom-1 -right-1 flex h-6 min-w-[24px] items-center justify-center rounded-full border-2 border-white bg-mp-ink px-1 font-display text-[10px] font-bold text-white"
       aria-hidden
     >
       {order}
@@ -563,17 +567,17 @@ function StationCircle({
         type="button"
         onClick={onActivate}
         aria-label={`Étape ${order} en cours. Ouvrir l'énigme.`}
-        className="relative flex h-20 w-20 items-center justify-center rounded-full bg-treasure-red text-parchment-light shadow-treasure focus-visible:outline-none"
+        className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-mp-coral to-mp-orange text-white shadow-mp-strong focus-visible:outline-none"
         whileTap={{ scale: 0.94 }}
       >
         {!reducedMotion && (
           <>
             <span
-              className="pointer-events-none absolute inset-0 -z-10 animate-pulse-ring rounded-full bg-treasure-red/45"
+              className="pointer-events-none absolute inset-0 -z-10 animate-pulse-ring rounded-full bg-mp-coral/30"
               aria-hidden
             />
             <span
-              className="pointer-events-none absolute -inset-2 -z-10 rounded-full border-2 border-treasure-red/30"
+              className="pointer-events-none absolute -inset-2 -z-10 rounded-full border-2 border-mp-coral/40"
               aria-hidden
             />
           </>
@@ -589,7 +593,7 @@ function StationCircle({
       <div
         role="img"
         aria-label={`Étape ${order} validée : ${standName}`}
-        className="relative flex h-[72px] w-[72px] items-center justify-center rounded-full border-2 border-parchment-ink/25 bg-treasure-green text-parchment-light shadow-treasure"
+        className="relative flex h-[72px] w-[72px] items-center justify-center rounded-full border-2 border-white bg-mp-red text-white shadow-mp"
       >
         <CheckCircle2 className="h-8 w-8" strokeWidth={2.2} aria-hidden />
         {orderBadge}
@@ -601,11 +605,11 @@ function StationCircle({
     <div
       role="img"
       aria-label={`Étape ${order} verrouillée. Termine les étapes précédentes d'abord.`}
-      className="relative flex h-[72px] w-[72px] items-center justify-center rounded-full border-2 border-parchment-dark bg-parchment-light/60 text-parchment-ink/50"
+      className="relative flex h-[72px] w-[72px] items-center justify-center rounded-full border-2 border-mp-sky/60 bg-mp-sky/40 text-mp-ink-soft/80"
     >
       <Lock className="h-7 w-7" strokeWidth={2} aria-hidden />
       <span
-        className="absolute -bottom-1 -right-1 flex h-6 min-w-[24px] items-center justify-center rounded-full border-2 border-parchment-light bg-parchment-ink/70 px-1 font-display text-[10px] font-bold text-parchment-light"
+        className="absolute -bottom-1 -right-1 flex h-6 min-w-[24px] items-center justify-center rounded-full border-2 border-white bg-mp-ink/70 px-1 font-display text-[10px] font-bold text-white"
         aria-hidden
       >
         {order}
@@ -626,16 +630,16 @@ function StationLabel({
   const paddedOrder = String(order).padStart(2, "0");
   return (
     <div className="flex flex-col items-center gap-0.5">
-      <p className="font-display text-[11px] font-bold uppercase tracking-[0.18em] text-parchment-ink/60">
+      <p className="font-display text-[11px] font-bold uppercase tracking-[0.18em] text-mp-ink-soft">
         Étape {paddedOrder}
         {status === "active" ? " · En cours" : ""}
       </p>
       {status === "done" ? (
         <>
-          <p className="text-[15px] font-semibold text-parchment-ink">
+          <p className="text-[15px] font-semibold text-mp-ink">
             {name}
           </p>
-          <p className="text-xs text-parchment-ink/70">
+          <p className="text-xs text-mp-ink-soft">
             Initiale :{" "}
             <span className="gold-initial">
               {(name[0] ?? "").toUpperCase()}
@@ -643,11 +647,11 @@ function StationLabel({
           </p>
         </>
       ) : status === "active" ? (
-        <p className="text-[15px] font-semibold text-parchment-ink">
+        <p className="text-[15px] font-semibold text-mp-ink">
           À découvrir
         </p>
       ) : (
-        <p className="inline-flex items-center gap-1 text-[14px] text-parchment-ink/55">
+        <p className="inline-flex items-center gap-1 text-[14px] text-mp-ink-soft">
           <Lock className="h-3.5 w-3.5" aria-hidden />
           Verrouillée
         </p>
@@ -673,15 +677,15 @@ function StationCard({
         damping: 22,
         delay: 0.08,
       }}
-      className="w-full max-w-[280px] rounded-2xl border-2 border-treasure-red/60 bg-parchment-light p-4 text-left shadow-treasure"
+      className="w-full max-w-[280px] rounded-2xl border-2 border-mp-coral/40 bg-gradient-to-br from-white to-mp-sky-soft p-4 text-left shadow-mp-card"
     >
-      <div className="mb-2 flex items-center gap-2 text-treasure-red">
+      <div className="mb-2 flex items-center gap-2 text-mp-red">
         <HelpCircle className="h-5 w-5" strokeWidth={2} aria-hidden />
-        <span className="font-display text-sm font-bold uppercase tracking-wider">
+        <span className="font-display text-sm font-bold italic uppercase tracking-wider">
           Énigme à résoudre
         </span>
       </div>
-      <p className="mb-3 text-sm leading-snug text-parchment-ink/85">
+      <p className="mb-3 text-sm leading-snug text-mp-ink">
         Un stand t&apos;attend au festival. Résous son énigme pour poursuivre
         l&apos;aventure.
       </p>
@@ -689,7 +693,7 @@ function StationCard({
         type="button"
         onClick={onActivate}
         whileTap={{ scale: 0.97 }}
-        className="btn-primary w-full"
+        className="btn-gradient w-full"
         style={{ minHeight: 48 }}
       >
         Ouvrir l&apos;énigme
@@ -717,27 +721,27 @@ function TrophyFooter({
     >
       <div
         className={clsx(
-          "mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border-2 shadow-treasure",
+          "mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border-2 shadow-mp",
           allDone
-            ? "border-treasure-gold bg-treasure-gold/25"
-            : "border-parchment-dark bg-parchment-light/50"
+            ? "border-mp-orange bg-gradient-to-br from-mp-coral/30 to-mp-orange/40"
+            : "border-mp-sky/60 bg-mp-sky/30"
         )}
       >
         <Trophy
           className={clsx(
             "h-10 w-10",
             allDone
-              ? "text-treasure-gold motion-safe:animate-pulse"
-              : "text-parchment-ink/45"
+              ? "text-mp-red motion-safe:animate-pulse"
+              : "text-mp-ink-soft/70"
           )}
           strokeWidth={2}
           aria-hidden
         />
       </div>
-      <h2 className="font-display text-2xl text-treasure-red">
+      <h2 className="font-display text-2xl text-mp-red">
         Le trésor final
       </h2>
-      <p className="mx-auto mt-2 max-w-sm text-sm leading-snug text-parchment-ink/75">
+      <p className="mx-auto mt-2 max-w-sm text-sm leading-snug text-mp-ink-soft">
         {allDone
           ? "Toutes les étapes sont validées. À toi de deviner l'anime caché."
           : "Devine l'anime caché une fois les 10 étapes complétées."}
@@ -764,7 +768,7 @@ function TrophyFooter({
             Tenter ma chance
             <ChevronRight className="h-4 w-4" aria-hidden />
           </button>
-          <p className="mt-3 text-xs text-parchment-ink/60">
+          <p className="mt-3 text-xs text-mp-ink-soft">
             Termine les {total} étapes pour tenter le code final ({doneCount}/
             {total})
           </p>
@@ -774,223 +778,25 @@ function TrophyFooter({
   );
 }
 
-// ---------- Decorative elements (pirate-map feel, pointer-events-none) ----------
+// ---------- Decorative elements (Manga Paradise feel) ----------
 
 function TrailDecor() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-      <Mountain style={{ top: "8%", left: "2%" }} />
-      <Palm style={{ top: "22%", right: "2%" }} />
-      <CompassRose style={{ top: "44%", left: "3%" }} />
-      <Boat style={{ top: "64%", right: "2%" }} />
-      <Skull style={{ top: "84%", left: "3%" }} />
+      {/* Sun-burst subtil au top */}
+      <div
+        className="sunburst-bg-soft pointer-events-none absolute left-0 right-0 top-0 h-[180px] opacity-70"
+        style={{ maskImage: "linear-gradient(to bottom, black, transparent)", WebkitMaskImage: "linear-gradient(to bottom, black, transparent)" }}
+      />
+      {/* Pétales sakura éparpillés */}
+      <Sakura className="absolute top-[10%] left-[4%] animate-float-slow opacity-70" size={28} />
+      <Sakura className="absolute top-[26%] right-[5%] animate-float-slow opacity-60" size={22} style={{ animationDelay: "0.8s" }} />
+      <Sakura className="absolute top-[48%] left-[6%] animate-float-slow opacity-65" size={30} style={{ animationDelay: "1.6s" }} />
+      <Sakura className="absolute top-[68%] right-[4%] animate-float-slow opacity-55" size={24} style={{ animationDelay: "2.1s" }} />
+      <Sakura className="absolute top-[84%] left-[5%] animate-float-slow opacity-60" size={26} style={{ animationDelay: "0.4s" }} />
+      {/* Torii discrets */}
+      <ToriiIcon className="absolute top-[36%] right-[8%] opacity-15" size={56} color="#DC1E44" />
+      <ToriiIcon className="absolute top-[76%] left-[8%] opacity-15" size={48} color="#DC1E44" />
     </div>
-  );
-}
-
-const decorInk = "rgb(58 40 24 / 0.5)";
-const decorFill = "rgb(58 40 24 / 0.18)";
-const decorStroke = 1.5;
-
-function Mountain({ style }: { style: React.CSSProperties }) {
-  return (
-    <svg
-      width="64"
-      height="50"
-      viewBox="0 0 64 50"
-      className="absolute opacity-80"
-      style={style}
-      aria-hidden
-    >
-      <path
-        d="M2 46 L18 18 L26 28 L38 8 L62 46 Z"
-        fill={decorFill}
-        stroke={decorInk}
-        strokeWidth={decorStroke}
-        strokeLinejoin="round"
-      />
-      <path
-        d="M38 8 L34 16 M38 8 L42 16"
-        stroke={decorInk}
-        strokeWidth={1}
-        fill="none"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function Palm({ style }: { style: React.CSSProperties }) {
-  return (
-    <svg
-      width="52"
-      height="66"
-      viewBox="0 0 52 66"
-      className="absolute opacity-80"
-      style={style}
-      aria-hidden
-    >
-      <path
-        d="M26 64 Q24 42 22 22"
-        stroke={decorInk}
-        strokeWidth={2}
-        fill="none"
-        strokeLinecap="round"
-      />
-      <path
-        d="M23 22 Q10 14 3 22 Q13 18 22 28"
-        fill={decorFill}
-        stroke={decorInk}
-        strokeWidth={decorStroke}
-        strokeLinejoin="round"
-      />
-      <path
-        d="M23 22 Q36 8 48 18 Q38 18 24 28"
-        fill={decorFill}
-        stroke={decorInk}
-        strokeWidth={decorStroke}
-        strokeLinejoin="round"
-      />
-      <path
-        d="M23 22 Q14 6 24 2 Q28 12 27 24"
-        fill={decorFill}
-        stroke={decorInk}
-        strokeWidth={decorStroke}
-        strokeLinejoin="round"
-      />
-      <path
-        d="M26 64 Q22 60 18 62 M26 64 Q30 60 34 62"
-        stroke={decorInk}
-        strokeWidth={1.2}
-        fill="none"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function CompassRose({ style }: { style: React.CSSProperties }) {
-  return (
-    <svg
-      width="56"
-      height="56"
-      viewBox="0 0 56 56"
-      className="absolute opacity-80"
-      style={style}
-      aria-hidden
-    >
-      <circle
-        cx="28"
-        cy="28"
-        r="24"
-        fill="rgb(58 40 24 / 0.08)"
-        stroke={decorInk}
-        strokeWidth={decorStroke}
-      />
-      <circle
-        cx="28"
-        cy="28"
-        r="17"
-        fill="none"
-        stroke={decorInk}
-        strokeWidth={1}
-        strokeDasharray="2 2"
-      />
-      <path
-        d="M28 6 L32 28 L28 50 L24 28 Z"
-        fill="rgb(192 57 43 / 0.3)"
-        stroke={decorInk}
-        strokeWidth={1.2}
-        strokeLinejoin="round"
-      />
-      <path
-        d="M6 28 L28 24 L50 28 L28 32 Z"
-        fill="rgb(58 40 24 / 0.14)"
-        stroke={decorInk}
-        strokeWidth={1}
-        strokeLinejoin="round"
-      />
-      <circle cx="28" cy="28" r="2.2" fill={decorInk} />
-    </svg>
-  );
-}
-
-function Boat({ style }: { style: React.CSSProperties }) {
-  return (
-    <svg
-      width="62"
-      height="52"
-      viewBox="0 0 62 52"
-      className="absolute opacity-80"
-      style={style}
-      aria-hidden
-    >
-      <path
-        d="M4 36 L58 36 L50 46 L12 46 Z"
-        fill={decorFill}
-        stroke={decorInk}
-        strokeWidth={decorStroke}
-        strokeLinejoin="round"
-      />
-      <line
-        x1="31"
-        y1="36"
-        x2="31"
-        y2="6"
-        stroke={decorInk}
-        strokeWidth={1.5}
-        strokeLinecap="round"
-      />
-      <path
-        d="M31 8 L48 22 L31 24 Z"
-        fill={decorFill}
-        stroke={decorInk}
-        strokeWidth={1.3}
-        strokeLinejoin="round"
-      />
-      <path
-        d="M31 12 L15 24 L31 26 Z"
-        fill={decorFill}
-        stroke={decorInk}
-        strokeWidth={1.3}
-        strokeLinejoin="round"
-      />
-      <path
-        d="M2 46 Q10 44 14 46 T26 46 T38 46 T50 46 T60 46"
-        stroke={decorInk}
-        strokeWidth={1}
-        fill="none"
-      />
-    </svg>
-  );
-}
-
-function Skull({ style }: { style: React.CSSProperties }) {
-  return (
-    <svg
-      width="48"
-      height="52"
-      viewBox="0 0 48 52"
-      className="absolute opacity-80"
-      style={style}
-      aria-hidden
-    >
-      <path
-        d="M6 20 Q6 4 24 4 Q42 4 42 20 Q42 30 37 34 L37 40 L31 40 L31 44 L27 44 L27 38 L21 38 L21 44 L17 44 L17 40 L11 40 L11 34 Q6 30 6 20 Z"
-        fill={decorFill}
-        stroke={decorInk}
-        strokeWidth={decorStroke}
-        strokeLinejoin="round"
-      />
-      <circle cx="17" cy="20" r="3" fill={decorInk} />
-      <circle cx="31" cy="20" r="3" fill={decorInk} />
-      <path
-        d="M21 28 L24 32 L27 28"
-        stroke={decorInk}
-        strokeWidth={1.3}
-        fill="none"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }

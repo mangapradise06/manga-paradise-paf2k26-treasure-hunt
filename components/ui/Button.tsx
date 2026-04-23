@@ -3,7 +3,13 @@
 import { forwardRef, type ButtonHTMLAttributes } from "react";
 import clsx from "clsx";
 
-type Variant = "primary" | "ghost" | "gold" | "danger";
+type Variant =
+  | "primary"
+  | "gradient"
+  | "ghost"
+  | "secondary"
+  | "danger"
+  | "gold"; // alias legacy → gradient
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
@@ -12,10 +18,11 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const VARIANTS: Record<Variant, string> = {
   primary: "btn-primary",
+  gradient: "btn-gradient",
   ghost: "btn-ghost",
-  gold: "btn-gold",
-  danger:
-    "btn bg-treasure-red text-parchment-light shadow-treasure hover:bg-[#a8301f]",
+  secondary: "btn-secondary",
+  danger: "btn-danger",
+  gold: "btn-gradient", // legacy
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

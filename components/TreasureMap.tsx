@@ -76,7 +76,7 @@ export function TreasureMap({ stands, completedStandIds, nextStandId }: Props) {
   return (
     <div className="relative mx-auto w-full max-w-5xl">
       <div
-        className="parchment-panel relative overflow-hidden rounded-2xl p-1 sm:p-2"
+        className="mp-card relative overflow-hidden rounded-2xl p-1 sm:p-2"
         style={{ aspectRatio: "3 / 2" }}
       >
         {/* Fond carte */}
@@ -166,7 +166,7 @@ export function TreasureMap({ stands, completedStandIds, nextStandId }: Props) {
       </div>
 
       {/* Légende */}
-      <ul className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-parchment-ink/80 sm:gap-3">
+      <ul className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-mp-ink sm:gap-3">
         <li className="chip">
           <span
             className="inline-block h-3 w-3 rounded-full"
@@ -222,7 +222,7 @@ function Cross({ status, order }: { status: Status; order: number }) {
       )}
       {/* Pin */}
       <div
-        className="relative flex h-9 w-9 items-center justify-center rounded-full border-2 border-parchment-ink/80 bg-parchment-light shadow-treasure transition-transform group-hover:scale-110 sm:h-11 sm:w-11"
+        className="relative flex h-9 w-9 items-center justify-center rounded-full border-2 border-mp-ink/80 bg-white shadow-mp transition-transform group-hover:scale-110 sm:h-11 sm:w-11"
         style={{ color }}
       >
         {status === "done" ? (
@@ -256,7 +256,7 @@ function Cross({ status, order }: { status: Status; order: number }) {
       </div>
       {/* Numéro */}
       <span
-        className="absolute -bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-parchment-ink px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-wider text-parchment-light shadow"
+        className="absolute -bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-mp-ink px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-wider text-white shadow"
         aria-hidden
       >
         {order}

@@ -5,7 +5,7 @@ export function Card({
   className,
   ...props
 }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={clsx("card", className)} {...props} />;
+  return <div className={clsx("mp-card", className)} {...props} />;
 }
 
 export function CardTitle({
@@ -15,7 +15,7 @@ export function CardTitle({
   return (
     <h2
       className={clsx(
-        "mb-2 font-display text-2xl text-parchment-ink",
+        "mb-2 font-display italic text-2xl text-mp-ink",
         className
       )}
       {...props}
@@ -29,7 +29,7 @@ export function CardSub({
 }: HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={clsx("text-sm text-parchment-ink/70", className)}
+      className={clsx("text-sm text-mp-ink-soft", className)}
       {...props}
     />
   );

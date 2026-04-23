@@ -15,6 +15,35 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/Toast";
+import { Sakura } from "@/components/icons/Sakura";
+
+type PastilleTone = "red" | "coral" | "orange" | "sky";
+
+const TONES: Record<
+  PastilleTone,
+  { wrapperBg: string; iconBg: string; iconColor: string }
+> = {
+  red: {
+    wrapperBg: "bg-mp-red/10",
+    iconBg: "bg-mp-red text-white",
+    iconColor: "text-white",
+  },
+  coral: {
+    wrapperBg: "bg-mp-coral/10",
+    iconBg: "bg-mp-coral text-white",
+    iconColor: "text-white",
+  },
+  orange: {
+    wrapperBg: "bg-mp-orange/10",
+    iconBg: "bg-mp-orange text-white",
+    iconColor: "text-white",
+  },
+  sky: {
+    wrapperBg: "bg-mp-sky/30",
+    iconBg: "bg-mp-sky text-mp-ink",
+    iconColor: "text-mp-ink",
+  },
+};
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -23,31 +52,47 @@ export default function OnboardingPage() {
   const [authChecked, setAuthChecked] = useState(false);
 
   // Garde-fou : vérifie qu'on a bien une session + redirige si onboarding déjà vu.
+  // Timeout court pour éviter tout spinner infini si l'API ne répond pas.
   useEffect(() => {
+    let cancelled = false;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+
     (async () => {
       try {
-        const r = await fetch("/api/me", { cache: "no-store" });
+        const r = await fetch("/api/me", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (cancelled) return;
         if (r.status === 401) {
           router.replace("/inscription");
           return;
         }
         if (r.ok) {
-          // Si l'utilisateur a déjà complété son onboarding, on saute.
-          if (typeof document !== "undefined") {
-            const seen = document.cookie
-              .split(";")
-              .some((c) => c.trim().startsWith("pp_onboarding=1"));
-            if (seen) {
+          try {
+            const data = (await r.json()) as { participant?: { onboarding_seen?: boolean } };
+            if (!cancelled && data.participant?.onboarding_seen === true) {
               router.replace("/map");
               return;
             }
+          } catch {
+            /* ignore parse */
           }
         }
       } catch {
-        /* on laisse la page s'afficher en best-effort */
+        /* best-effort */
+      } finally {
+        clearTimeout(timeoutId);
+        if (!cancelled) setAuthChecked(true);
       }
-      setAuthChecked(true);
     })();
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, [router]);
 
   async function handleStart() {
@@ -70,7 +115,7 @@ export default function OnboardingPage() {
   if (!authChecked) {
     return (
       <main className="mx-auto flex min-h-screen max-w-xl items-center justify-center px-5">
-        <div className="flex items-center gap-2 text-parchment-ink/70">
+        <div className="flex items-center gap-2 text-mp-ink-soft">
           <span className="dot-spin" aria-hidden /> Chargement…
         </div>
       </main>
@@ -78,18 +123,21 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="mx-auto max-w-2xl px-5 pb-40 pt-8 sm:py-12">
-      <div className="parchment-panel p-6 sm:p-8">
-        <h1 className="font-display text-3xl text-treasure-red sm:text-4xl">
-          Bienvenue dans la chasse au trésor Manga Paradise !
+    <main className="mx-auto max-w-2xl px-5 pb-40 pt-6 sm:py-12">
+      {/* Bannière gradient top */}
+      <div className="mp-banner mb-5">
+        <h1 className="font-display text-3xl italic sm:text-4xl">
+          Bienvenue dans la chasse !
         </h1>
-        <p className="mt-3 text-sm text-parchment-ink/80 sm:text-base">
-          Un petit briefing avant de partir à l&apos;aventure. Lis tranquillement,
-          c&apos;est rapide.
+        <p className="mt-1 text-sm text-white/90 sm:text-base">
+          Un petit briefing avant de partir à l&apos;aventure. Lis tranquillement, c&apos;est rapide.
         </p>
+      </div>
 
+      <div className="space-y-4">
         <Section
-          icon={<Target className="h-5 w-5 text-treasure-red" />}
+          tone="red"
+          icon={<Target className="h-5 w-5" />}
           title="🎯 Le but"
         >
           <p>
@@ -99,30 +147,34 @@ export default function OnboardingPage() {
         </Section>
 
         <Section
-          icon={<ScrollText className="h-5 w-5 text-treasure-red" />}
+          tone="coral"
+          icon={<ScrollText className="h-5 w-5" />}
           title="📜 Comment ça marche"
         >
-          <ol className="mt-2 space-y-2 pl-5 [list-style:decimal]">
-            <li>Lis l&apos;énigme de l&apos;étape en cours.</li>
-            <li>
-              Trouve le stand qu&apos;elle décrit. Pas de panique, il est
-              forcément sur le site !
-            </li>
-            <li>
-              Une fois sur place, trouve quel personnage d&apos;anime est
-              associé à ce stand (parfois c&apos;est écrit, parfois il faut
-              demander aux bénévoles).
-            </li>
-            <li>
-              Reviens dans l&apos;app, tape le nom du personnage, et passe à
-              l&apos;étape suivante.
-            </li>
-            <li>Répète 10 fois pour débloquer la dernière épreuve.</li>
+          <ol className="mt-2 space-y-2">
+            {[
+              "Lis l'énigme de l'étape en cours.",
+              "Trouve le stand qu'elle décrit. Pas de panique, il est forcément sur le site !",
+              "Trouve quel personnage d'anime est associé à ce stand (parfois c'est écrit, parfois il faut demander aux bénévoles).",
+              "Reviens dans l'app, tape le nom du personnage, et passe à l'étape suivante.",
+              "Répète 10 fois pour débloquer la dernière épreuve.",
+            ].map((txt, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <Sakura size={18} className="mt-0.5 shrink-0" />
+                <span>
+                  <span className="font-semibold text-mp-red">
+                    {i + 1}.
+                  </span>{" "}
+                  {txt}
+                </span>
+              </li>
+            ))}
           </ol>
         </Section>
 
         <Section
-          icon={<Rocket className="h-5 w-5 text-treasure-red" />}
+          tone="orange"
+          icon={<Rocket className="h-5 w-5" />}
           title="⚡ L'épreuve finale"
         >
           <p>
@@ -134,20 +186,23 @@ export default function OnboardingPage() {
         </Section>
 
         <Section
-          icon={<Lightbulb className="h-5 w-5 text-treasure-red" />}
+          tone="sky"
+          icon={<Lightbulb className="h-5 w-5" />}
           title="💡 Astuces"
         >
-          <ul className="mt-2 space-y-2 pl-5 [list-style:disc]">
-            <li>Prends ton temps, la chasse dure toute la journée.</li>
-            <li>
-              Tu peux suspendre et revenir plus tard, ta progression est
-              sauvegardée.
-            </li>
-            <li>
-              Si tu es bloqué, un indice bonus apparaîtra après ton premier
-              essai raté.
-            </li>
-            <li>
+          <ul className="mt-2 space-y-2">
+            {[
+              "Prends ton temps, la chasse dure toute la journée.",
+              "Tu peux suspendre et revenir plus tard, ta progression est sauvegardée.",
+              "Si tu es bloqué, un indice bonus apparaîtra après ton premier essai raté.",
+            ].map((txt, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <Sakura size={18} className="mt-0.5 shrink-0" />
+                <span>{txt}</span>
+              </li>
+            ))}
+            <li className="flex items-start gap-2">
+              <Sakura size={18} className="mt-0.5 shrink-0" />
               <span className="inline-flex items-center gap-1">
                 <Mail className="h-3.5 w-3.5" aria-hidden />
                 Une seule participation par email.
@@ -157,7 +212,8 @@ export default function OnboardingPage() {
         </Section>
 
         <Section
-          icon={<Trophy className="h-5 w-5 text-treasure-red" />}
+          tone="red"
+          icon={<Trophy className="h-5 w-5" />}
           title="🎁 Les récompenses"
         >
           <p>
@@ -167,28 +223,28 @@ export default function OnboardingPage() {
             finishers : goodies, mangas, places VIP.
           </p>
         </Section>
+      </div>
 
-        <div className="mt-8 flex flex-wrap items-center gap-3 rounded-xl border border-parchment-ink/15 bg-parchment-light/60 p-4 text-sm text-parchment-ink/80">
-          <Compass className="h-5 w-5 shrink-0 text-treasure-gold" aria-hidden />
-          <span>
-            Dès que tu cliques sur <em>C&apos;est parti</em>, tu arrives sur ta
-            carte au trésor. Bonne chasse !
-          </span>
-        </div>
+      <div className="mt-6 flex flex-wrap items-center gap-3 rounded-2xl border border-mp-sky/40 bg-mp-sky-soft/60 p-4 text-sm text-mp-ink">
+        <Compass className="h-5 w-5 shrink-0 text-mp-red" aria-hidden />
+        <span>
+          Dès que tu cliques sur <em>C&apos;est parti</em>, tu arrives sur ta
+          carte au trésor. Bonne chasse !
+        </span>
+      </div>
 
-        {/* CTA inline (fallback) — le sticky ci-dessous est prioritaire sur mobile */}
-        <div className="mt-6 hidden sm:block">
-          <Button
-            type="button"
-            variant="primary"
-            onClick={handleStart}
-            loading={submitting}
-            className="w-full sm:w-auto"
-          >
-            <MapPin className="h-4 w-4" aria-hidden />
-            C&apos;est parti !
-          </Button>
-        </div>
+      {/* CTA inline fallback desktop */}
+      <div className="mt-6 hidden sm:block">
+        <Button
+          type="button"
+          variant="gradient"
+          onClick={handleStart}
+          loading={submitting}
+          className="w-full px-6 py-3 text-base sm:w-auto"
+        >
+          <MapPin className="h-4 w-4" aria-hidden />
+          C&apos;est parti !
+        </Button>
       </div>
 
       {/* Sticky CTA mobile */}
@@ -196,16 +252,16 @@ export default function OnboardingPage() {
         className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center p-3 sm:hidden"
         style={{ paddingBottom: `calc(0.75rem + env(safe-area-inset-bottom))` }}
       >
-        <div className="pointer-events-auto flex w-full max-w-md items-center justify-center rounded-full border border-parchment-ink/10 bg-parchment-light/95 px-3 py-2 shadow-treasure backdrop-blur-md">
+        <div className="pointer-events-auto w-full max-w-md">
           <Button
             type="button"
-            variant="primary"
+            variant="gradient"
             onClick={handleStart}
             loading={submitting}
-            className="w-full"
-            style={{ minHeight: 48 }}
+            className="w-full py-3 text-base shadow-mp-strong"
+            style={{ minHeight: 52 }}
           >
-            <Award className="h-4 w-4" aria-hidden />
+            <Award className="h-5 w-5" aria-hidden />
             C&apos;est parti !
           </Button>
         </div>
@@ -215,25 +271,30 @@ export default function OnboardingPage() {
 }
 
 function Section({
+  tone,
   icon,
   title,
   children,
 }: {
+  tone: PastilleTone;
   icon: React.ReactNode;
   title: string;
   children: React.ReactNode;
 }) {
+  const t = TONES[tone];
   return (
-    <section className="mt-6 border-t border-parchment-ink/10 pt-5 first-of-type:mt-6 first-of-type:border-t-0 first-of-type:pt-4">
-      <h2 className="flex items-center gap-2 font-display text-xl text-treasure-red sm:text-2xl">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-treasure-red/10">
+    <section
+      className={`rounded-3xl border border-mp-sky/30 ${t.wrapperBg} p-5 sm:p-6`}
+    >
+      <h2 className="flex items-center gap-3 font-display italic text-xl text-mp-ink sm:text-2xl">
+        <span
+          className={`inline-flex h-10 w-10 items-center justify-center rounded-full ${t.iconBg}`}
+        >
           {icon}
         </span>
         {title}
       </h2>
-      <div className="mt-2 text-sm text-parchment-ink/85 sm:text-base">
-        {children}
-      </div>
+      <div className="mt-3 text-sm text-mp-ink sm:text-base">{children}</div>
     </section>
   );
 }

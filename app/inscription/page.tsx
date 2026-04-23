@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/Toast";
 import { ArrowLeft, Info } from "lucide-react";
+import { ToriiIcon } from "@/components/icons/ToriiIcon";
+import { Sakura } from "@/components/icons/Sakura";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -88,26 +90,48 @@ export default function InscriptionPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-xl flex-col px-5 py-8 sm:py-12">
+    <main className="relative mx-auto flex min-h-screen max-w-xl flex-col px-5 py-8 sm:py-12">
+      {/* Décor sakura */}
+      <Sakura
+        className="pointer-events-none absolute -top-2 right-4 opacity-70 sm:right-8"
+        size={40}
+        aria-hidden="true"
+      />
+      <Sakura
+        className="pointer-events-none absolute bottom-16 left-2 opacity-50 sm:left-6"
+        size={28}
+        aria-hidden="true"
+      />
+
       <Link
         href="/"
-        className="mb-4 inline-flex items-center gap-1 text-sm text-parchment-ink/70 hover:text-parchment-ink"
+        className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-mp-ink-soft hover:text-mp-red"
       >
         <ArrowLeft className="h-4 w-4" /> Retour
       </Link>
 
-      <div className="parchment-panel p-6 sm:p-8">
-        <h1 className="font-display text-3xl text-treasure-red">Inscription</h1>
-        <p className="mt-1 text-sm text-parchment-ink/70">
-          Une minute et tu pars à l'aventure. On garde tes coordonnées au chaud
-          uniquement pour le tirage au sort.
+      {/* Ruban gradient header */}
+      <div className="mp-banner mb-5">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/25">
+            <ToriiIcon size={22} color="#ffffff" />
+          </div>
+          <h1 className="font-display text-3xl italic sm:text-4xl">
+            Inscription
+          </h1>
+        </div>
+        <p className="mt-1 text-sm text-white/90 sm:text-base">
+          Une minute et tu pars à l&apos;aventure. On garde tes coordonnées au
+          chaud uniquement pour le tirage au sort.
         </p>
+      </div>
 
+      <div className="mp-card p-6 sm:p-8">
         <div
           role="note"
-          className="mt-4 flex items-start gap-2 rounded-xl border border-treasure-gold/40 bg-treasure-gold/10 p-3 text-sm text-parchment-ink"
+          className="mb-5 flex items-start gap-2 rounded-2xl border border-mp-coral/30 bg-mp-coral/10 p-3 text-sm text-mp-ink"
         >
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-treasure-gold" aria-hidden />
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-mp-coral" aria-hidden />
           <p>
             <span className="font-semibold">Une seule participation par
             adresse email.</span>{" "}
@@ -163,26 +187,26 @@ export default function InscriptionPage() {
               type="checkbox"
               checked={rgpd}
               onChange={(e) => setRgpd(e.target.checked)}
-              className="mt-1 h-4 w-4 accent-treasure-red"
+              className="mt-1 h-4 w-4 accent-mp-red"
               aria-describedby="rgpd-hint"
             />
-            <span id="rgpd-hint">
-              J'accepte que mes données soient utilisées pour l'animation de la
+            <span id="rgpd-hint" className="text-mp-ink">
+              J&apos;accepte que mes données soient utilisées pour l&apos;animation de la
               chasse au trésor et pour me contacter en cas de gain. (obligatoire)
               {errors.rgpd && (
-                <span className="mt-1 block text-xs text-treasure-red">
+                <span className="mt-1 block text-xs text-mp-red">
                   {errors.rgpd}
                 </span>
               )}
             </span>
           </label>
 
-          <label className="flex items-start gap-2 text-sm">
+          <label className="flex items-start gap-2 text-sm text-mp-ink">
             <input
               type="checkbox"
               checked={newsletter}
               onChange={(e) => setNewsletter(e.target.checked)}
-              className="mt-1 h-4 w-4 accent-treasure-red"
+              className="mt-1 h-4 w-4 accent-mp-red"
             />
             <span>
               Je souhaite recevoir la newsletter Manga Paradise (événements,
@@ -190,15 +214,21 @@ export default function InscriptionPage() {
             </span>
           </label>
 
-          <Button type="submit" variant="primary" loading={loading} className="w-full sm:w-auto">
-            Lancer l'aventure
+          <Button
+            type="submit"
+            variant="primary"
+            loading={loading}
+            className="w-full px-6 py-3 text-base sm:w-auto"
+          >
+            <ToriiIcon size={18} color="#ffffff" />
+            Lancer l&apos;aventure
           </Button>
         </form>
       </div>
 
-      <p className="mt-6 text-center text-xs text-parchment-ink/60">
-        En t'inscrivant tu acceptes que Manga Paradise (association loi 1901)
-        conserve tes données pendant la durée de l'événement. Droit d'accès, de
+      <p className="mt-6 text-center text-xs text-mp-ink-soft">
+        En t&apos;inscrivant tu acceptes que Manga Paradise (association loi 1901)
+        conserve tes données pendant la durée de l&apos;événement. Droit d&apos;accès, de
         rectification et de suppression :{" "}
         <a href="mailto:lucas.protin@manga-paradise.fr" className="underline">
           lucas.protin@manga-paradise.fr

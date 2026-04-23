@@ -46,15 +46,19 @@ function AdminLoginInner() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md items-center px-5">
-      <div className="parchment-panel w-full p-6 sm:p-8">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-mp-sky-soft/40 px-5 py-10">
+      <div className="pointer-events-none absolute inset-0 sunburst-bg-soft opacity-50" aria-hidden />
+      <div className="mp-card relative z-10 w-full max-w-md p-6 sm:p-8">
         <div className="mb-4 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-treasure-red text-parchment-light">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-mp-coral to-mp-orange text-white shadow-mp">
             <Lock className="h-5 w-5" />
           </div>
-          <h1 className="font-display text-2xl text-parchment-ink">
-            Espace organisateur
-          </h1>
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-mp-coral">Admin</p>
+            <h1 className="font-display italic text-2xl text-mp-red">
+              Espace organisateur
+            </h1>
+          </div>
         </div>
         <form onSubmit={onSubmit} className="space-y-4">
           <Input
@@ -65,7 +69,7 @@ function AdminLoginInner() {
             autoComplete="current-password"
             required
           />
-          <Button type="submit" loading={loading} className="w-full sm:w-auto">
+          <Button type="submit" variant="gradient" loading={loading} className="w-full">
             Se connecter
           </Button>
         </form>

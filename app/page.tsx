@@ -1,79 +1,151 @@
 import Link from "next/link";
-import Image from "next/image";
-import { Compass, MapPinned, Trophy } from "lucide-react";
+import { Compass, MapPinned, Trophy, ChevronRight } from "lucide-react";
+import { MangaParadiseBackdrop } from "@/components/MangaParadiseBackdrop";
+import { ToriiIcon } from "@/components/icons/ToriiIcon";
+import { Sakura } from "@/components/icons/Sakura";
+import { Clouds } from "@/components/icons/Clouds";
 
 export default function LandingPage() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col items-center px-5 py-10 text-center sm:py-16">
-      <div className="mb-6 flex flex-col items-center gap-3">
-        <Image
-          src="/logos/manga-paradise.svg"
-          alt="Logo Manga Paradise"
-          width={280}
-          height={70}
-          priority
-        />
-        <p className="chip border-treasure-gold/40 bg-treasure-gold/10 text-parchment-ink">
-          Play Azure Festival 2026 — Nice
-        </p>
-      </div>
+    <main className="relative">
+      {/* ===== HERO ===== */}
+      <MangaParadiseBackdrop variant="hero" height="64vh" withClouds withSakura>
+        <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center px-5 pb-24 pt-10 text-center sm:pt-14">
+          <div className="mb-5 flex flex-col items-center gap-3">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/95 shadow-mp-strong">
+              <ToriiIcon size={48} color="#DC1E44" />
+            </div>
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/40 bg-white/25 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white backdrop-blur-sm">
+              Play Azure Festival 2026 · Nice
+            </span>
+          </div>
 
-      <h1 className="font-display text-4xl leading-tight text-treasure-red drop-shadow-[0_2px_0_rgba(58,40,24,0.15)] sm:text-5xl md:text-6xl">
-        Chasse au Trésor<br />
-        <span className="text-parchment-ink">PAF 2K26</span>
-      </h1>
-      <p className="mt-4 max-w-xl text-parchment-ink/80 sm:text-lg">
-        10 stands, 10 énigmes, 10 personnages à recruter. Rassemble leurs
-        initiales, devine l'anime caché et tente de remporter une{" "}
-        <strong>figurine officielle</strong>&nbsp;!
-      </p>
+          <h1 className="mp-title-outline font-display text-5xl italic leading-[0.95] tracking-wide sm:text-6xl md:text-7xl">
+            CHASSE
+            <br />
+            AU TRÉSOR
+          </h1>
 
-      <section className="parchment-panel mt-8 w-full p-5 text-left sm:p-7">
-        <h2 className="mb-3 font-display text-xl text-parchment-ink sm:text-2xl">
-          Comment ça marche ?
-        </h2>
-        <ul className="space-y-3 text-parchment-ink/90">
-          <li className="flex items-start gap-3">
-            <MapPinned className="mt-0.5 h-5 w-5 shrink-0 text-treasure-red" />
-            <span>
-              Inscris-toi une seule fois et découvre ta carte avec 10 croix
-              à explorer dans l'ordre du parcours.
-            </span>
-          </li>
-          <li className="flex items-start gap-3">
-            <Compass className="mt-0.5 h-5 w-5 shrink-0 text-treasure-red" />
-            <span>
-              À chaque stand, lis les 2 indices et devine le personnage d'anime
-              associé. L'orthographe approximative est acceptée, pas de panique !
-            </span>
-          </li>
-          <li className="flex items-start gap-3">
-            <Trophy className="mt-0.5 h-5 w-5 shrink-0 text-treasure-gold" />
-            <span>
-              Les 10 initiales forment le titre d'un anime. Devine-le pour
-              entrer dans le tirage au sort final.
-            </span>
-          </li>
-        </ul>
+          <p className="mt-5 max-w-xl text-base font-medium text-white/95 drop-shadow-[0_1px_0_rgba(179,23,57,0.5)] sm:text-lg">
+            Play Azur Festival 2026 · 10 stands · 1 mot secret
+          </p>
+
+          <Link
+            href="/inscription"
+            className="group mt-8 inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-base font-bold text-mp-red shadow-mp-strong transition hover:bg-mp-sky-soft active:scale-[0.98] sm:text-lg"
+          >
+            <ToriiIcon size={22} color="#DC1E44" />
+            Lancer l&apos;aventure
+            <ChevronRight className="h-5 w-5 transition group-hover:translate-x-0.5" />
+          </Link>
+        </div>
+      </MangaParadiseBackdrop>
+
+      {/* ===== SECTION FEATURES ===== */}
+      <section className="relative mx-auto max-w-5xl px-5 pb-16 pt-10 sm:pb-24 sm:pt-16">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-mp-red">
+            Ton parcours
+          </p>
+          <h2 className="mt-2 font-display text-3xl italic text-mp-ink sm:text-4xl">
+            Découvre · Explore · Gagne
+          </h2>
+          <p className="mt-3 text-sm text-mp-ink-soft sm:text-base">
+            10 stands, 10 énigmes, 10 personnages à recruter. Rassemble leurs
+            initiales, devine l&apos;anime caché et tente de remporter une
+            figurine officielle.
+          </p>
+        </div>
+
+        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-5">
+          <FeatureCard
+            tone="red"
+            icon={<MapPinned className="h-6 w-6" />}
+            title="Découvre"
+            text="Une carte unique s'ouvre après ton inscription. 10 étapes à parcourir dans l'ordre."
+          />
+          <FeatureCard
+            tone="coral"
+            icon={<Compass className="h-6 w-6" />}
+            title="Explore"
+            text="Lis les indices, trouve le stand, rencontre le personnage. L'orthographe approximative est OK."
+          />
+          <FeatureCard
+            tone="orange"
+            icon={<Trophy className="h-6 w-6" />}
+            title="Gagne"
+            text="Les 10 initiales forment le titre d'un anime. Devine-le pour entrer dans le tirage au sort."
+          />
+        </div>
+
+        <div className="mt-12 flex justify-center">
+          <Link
+            href="/inscription"
+            className="btn-primary px-8 py-3 text-base"
+          >
+            Commencer l&apos;aventure
+            <ChevronRight className="h-4 w-4" />
+          </Link>
+        </div>
       </section>
 
-      <Link href="/inscription" className="btn-primary mt-8 text-base sm:text-lg">
-        Commencer l'aventure
-      </Link>
-
-      <p className="mt-10 max-w-prose text-xs text-parchment-ink/60">
-        Événement organisé par l'association Manga Paradise (loi 1901). Tes
-        données sont utilisées uniquement pour l'animation du jeu et le tirage
-        au sort. Conformément au RGPD, tu peux demander leur suppression à tout
-        moment à{" "}
-        <a
-          href="mailto:lucas.protin@manga-paradise.fr"
-          className="underline hover:text-treasure-red"
-        >
-          lucas.protin@manga-paradise.fr
-        </a>
-        .
-      </p>
+      {/* ===== FOOTER ===== */}
+      <footer className="relative mt-8 overflow-hidden border-t border-mp-sky/40 bg-mp-sky-soft/60 pt-8">
+        <Clouds
+          className="pointer-events-none absolute inset-x-0 top-0 h-10 w-full -translate-y-1/2 opacity-60"
+          color="#B9DBFF"
+        />
+        <div className="mx-auto max-w-3xl px-5 pb-10 text-center">
+          <div className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-mp-red">
+            <Sakura size={18} />
+            Manga Paradise
+            <Sakura size={18} />
+          </div>
+          <p className="mx-auto max-w-prose text-xs text-mp-ink-soft">
+            Événement organisé par l&apos;association Manga Paradise (loi 1901). Tes
+            données sont utilisées uniquement pour l&apos;animation du jeu et le
+            tirage au sort. Conformément au RGPD, tu peux demander leur suppression
+            à tout moment à{" "}
+            <a
+              href="mailto:lucas.protin@manga-paradise.fr"
+              className="font-semibold text-mp-red underline"
+            >
+              lucas.protin@manga-paradise.fr
+            </a>
+            .
+          </p>
+        </div>
+      </footer>
     </main>
+  );
+}
+
+function FeatureCard({
+  tone,
+  icon,
+  title,
+  text,
+}: {
+  tone: "red" | "coral" | "orange";
+  icon: React.ReactNode;
+  title: string;
+  text: string;
+}) {
+  const toneClasses = {
+    red: { bg: "bg-mp-red", ring: "ring-mp-red/20" },
+    coral: { bg: "bg-mp-coral", ring: "ring-mp-coral/20" },
+    orange: { bg: "bg-mp-orange", ring: "ring-mp-orange/20" },
+  }[tone];
+
+  return (
+    <div className="mp-card flex flex-col items-start gap-3 transition hover:-translate-y-0.5 hover:shadow-mp">
+      <div
+        className={`flex h-12 w-12 items-center justify-center rounded-2xl text-white ring-8 ${toneClasses.bg} ${toneClasses.ring}`}
+      >
+        {icon}
+      </div>
+      <h3 className="font-display text-xl italic text-mp-ink">{title}</h3>
+      <p className="text-sm text-mp-ink-soft">{text}</p>
+    </div>
   );
 }
