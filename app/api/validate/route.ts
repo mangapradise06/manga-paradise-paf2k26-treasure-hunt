@@ -101,10 +101,13 @@ export async function POST(req: Request) {
 
   return NextResponse.json({
     ok: true,
+    success: true,
     attempts,
     validated: updatedProgress.length,
     total: 10,
     complete,
     nextStandId: newNext?.id ?? null,
+    next_stand_id: newNext?.id ?? null,
+    stand_name: next.name,
   });
 }

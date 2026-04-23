@@ -19,7 +19,7 @@ export async function GET() {
   const { data: participant, error } = await sb
     .from("participants")
     .select(
-      "id, first_name, last_name, email, pseudo, rgpd_consent, newsletter_consent, created_at, completed_at, final_anime_guess, is_winner_eligible"
+      "id, first_name, last_name, email, pseudo, rgpd_consent, newsletter_consent, created_at, completed_at, final_anime_guess, is_winner_eligible, onboarding_seen, reset_used"
     )
     .eq("id", sess.participantId)
     .maybeSingle();

@@ -6,7 +6,7 @@ import { Dialog } from "./ui/Dialog";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { useToast } from "./Toast";
-import { Lightbulb, Compass, Sparkles } from "lucide-react";
+import { CheckCircle2, Compass, Lightbulb, Sparkles } from "lucide-react";
 
 export interface EnigmaData {
   id: number;
@@ -25,12 +25,27 @@ interface Props {
   onValidated: (result: { complete: boolean; nextStandId: number | null }) => void;
 }
 
+interface ValidateResponse {
+  ok?: boolean;
+  success?: boolean;
+  complete?: boolean;
+  nextStandId?: number | null;
+  next_stand_id?: number | null;
+  stand_name?: string;
+  error?: string;
+}
+
 export function EnigmaModal({ open, onClose, stand, loading, onValidated }: Props) {
   const [revealed, setRevealed] = useState<1 | 2>(1);
   const [answer, setAnswer] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [revealStandName, setRevealStandName] = useState<string | null>(null);
+  const [pendingResult, setPendingResult] = useState<{
+    complete: boolean;
+    nextStandId: number | null;
+  } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -41,16 +56,22 @@ export function EnigmaModal({ open, onClose, stand, loading, onValidated }: Prop
     setError(null);
     setSuccess(false);
     setSubmitting(false);
+    setRevealStandName(null);
+    setPendingResult(null);
     // focus après anim
     setTimeout(() => inputRef.current?.focus(), 250);
   }, [open, stand?.id]);
 
   const alreadyDone = stand?.already === true;
 
+  // Avant validation, on masque le nom du stand (anti-triche : l'indice
+  // doit suffire à le trouver). On l'affiche uniquement pour une étape déjà
+  // validée ou dans l'écran de succès.
   const header = useMemo(() => {
     if (!stand) return "";
-    return `Étape ${stand.order_index} / 10 — ${stand.name}`;
-  }, [stand]);
+    if (alreadyDone) return `Étape ${stand.order_index} / 10 — ${stand.name}`;
+    return `Étape ${stand.order_index} / 10`;
+  }, [stand, alreadyDone]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -67,23 +88,24 @@ export function EnigmaModal({ open, onClose, stand, loading, onValidated }: Prop
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ standId: stand.id, answer }),
       });
-      const json = await res.json();
-      if (!res.ok || json.ok === false) {
+      const json = (await res.json()) as ValidateResponse;
+      const ok = res.ok && (json.ok === true || json.success === true);
+      if (!ok) {
         const msg = json.error ?? "Réponse incorrecte.";
         setError(msg);
         toast(msg, { variant: "error" });
         setSubmitting(false);
         return;
       }
-      // victoire ✨
+      // victoire : on révèle le nom du stand avant de poursuivre
+      const revealedName = json.stand_name ?? stand.name;
+      setRevealStandName(revealedName);
       setSuccess(true);
+      setPendingResult({
+        complete: Boolean(json.complete),
+        nextStandId: json.nextStandId ?? json.next_stand_id ?? null,
+      });
       toast("Bravo ! Personnage recruté.", { variant: "success" });
-      setTimeout(() => {
-        onValidated({
-          complete: Boolean(json.complete),
-          nextStandId: json.nextStandId ?? null,
-        });
-      }, 900);
     } catch {
       const msg = "Erreur réseau. Réessaie.";
       setError(msg);
@@ -92,21 +114,71 @@ export function EnigmaModal({ open, onClose, stand, loading, onValidated }: Prop
     }
   }
 
+  function continueFromReveal() {
+    if (!pendingResult) return;
+    onValidated(pendingResult);
+  }
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
       title={header}
       subtitle={
-        alreadyDone
-          ? "Tu as déjà validé cette étape. Bravo !"
-          : "Décrypte les indices pour recruter le prochain personnage."
+        success
+          ? undefined
+          : alreadyDone
+            ? "Tu as déjà validé cette étape. Bravo !"
+            : "Décrypte les indices pour recruter le prochain personnage."
       }
     >
       {loading || !stand ? (
         <div className="flex items-center gap-3 py-10 text-parchment-ink/70">
-          <span className="dot-spin" aria-hidden /> Chargement de l'énigme…
+          <span className="dot-spin" aria-hidden /> Chargement de l&apos;énigme…
         </div>
+      ) : success && revealStandName ? (
+        // ---------- Écran de révélation après bonne réponse ----------
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+          className="flex flex-col items-center gap-4 py-4 text-center"
+          role="status"
+          aria-live="polite"
+        >
+          <motion.div
+            initial={{ scale: 0.4, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 16 }}
+            className="flex h-20 w-20 items-center justify-center rounded-full bg-treasure-green/15 text-treasure-green shadow-treasure"
+            aria-hidden
+          >
+            <CheckCircle2 className="h-12 w-12" strokeWidth={2.2} />
+          </motion.div>
+          <div>
+            <h3 className="font-display text-2xl text-treasure-red sm:text-3xl">
+              Bravo !
+            </h3>
+            <p className="mt-2 text-sm text-parchment-ink/80 sm:text-base">
+              Ce personnage se trouvait au stand :
+            </p>
+            <p className="mt-1 font-display text-xl text-parchment-ink sm:text-2xl">
+              {revealStandName}
+            </p>
+            <p className="mt-3 text-sm text-parchment-ink/70">
+              Tu peux maintenant passer à l&apos;étape suivante.
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="primary"
+            onClick={continueFromReveal}
+            className="mt-2 w-full sm:w-auto"
+          >
+            <Sparkles className="h-4 w-4" />
+            {pendingResult?.complete ? "Voir l'épreuve finale" : "Étape suivante"}
+          </Button>
+        </motion.div>
       ) : (
         <div className="space-y-5">
           <AnimatePresence mode="wait">
@@ -159,7 +231,7 @@ export function EnigmaModal({ open, onClose, stand, loading, onValidated }: Prop
                 error={error ?? undefined}
                 autoComplete="off"
                 spellCheck={false}
-                disabled={submitting || success}
+                disabled={submitting}
               />
               <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
                 <Button
@@ -170,33 +242,13 @@ export function EnigmaModal({ open, onClose, stand, loading, onValidated }: Prop
                 >
                   Annuler
                 </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  loading={submitting}
-                  disabled={success}
-                >
+                <Button type="submit" variant="primary" loading={submitting}>
                   <Sparkles className="h-4 w-4" />
                   Valider
                 </Button>
               </div>
             </form>
           )}
-
-          <AnimatePresence>
-            {success && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                className="pointer-events-none absolute inset-0 flex items-center justify-center"
-              >
-                <div className="rounded-2xl bg-treasure-green px-6 py-3 font-display text-xl text-parchment-light shadow-treasure">
-                  ✓ Bravo !
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       )}
     </Dialog>

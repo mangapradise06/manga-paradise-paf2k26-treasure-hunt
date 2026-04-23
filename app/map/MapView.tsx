@@ -2,11 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { TreasureMap } from "@/components/TreasureMap";
-import { ProgressBar } from "@/components/ProgressBar";
+import { TreasureTrail, TrailSkeleton } from "@/components/TreasureTrail";
+import { Dialog } from "@/components/ui/Dialog";
+import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/Toast";
-import { LogOut, Sparkles } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 
 interface StandLite {
   id: number;
@@ -16,7 +16,13 @@ interface StandLite {
   map_y: number;
 }
 interface MeData {
-  participant: { pseudo: string; first_name: string; completed_at: string | null };
+  participant: {
+    pseudo: string;
+    first_name: string;
+    completed_at: string | null;
+    onboarding_seen?: boolean;
+    reset_used?: boolean;
+  };
   progress: { stand_id: number }[];
   stands: StandLite[];
   nextStandId: number | null;
@@ -27,6 +33,8 @@ export default function MapView({ children }: { children?: React.ReactNode }) {
   const { toast } = useToast();
   const [me, setMe] = useState<MeData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -41,8 +49,11 @@ export default function MapView({ children }: { children?: React.ReactNode }) {
       }
       const data = (await r.json()) as MeData;
       setMe(data);
+      if (data.participant.onboarding_seen === false) {
+        router.replace("/onboarding");
+        return;
+      }
       if (data.participant.completed_at) {
-        // déjà fini → /congrats
         router.replace("/congrats");
       } else if (data.progress.length >= 10) {
         router.replace("/final");
@@ -56,13 +67,32 @@ export default function MapView({ children }: { children?: React.ReactNode }) {
     load();
   }, [load]);
 
-  // Les modales sont des pages enfants qui rendent ce MapView → elles
-  // peuvent rafraîchir les données via router.refresh() et nous recharger.
   useEffect(() => {
     const handler = () => load();
     window.addEventListener("mp:progress-updated", handler);
     return () => window.removeEventListener("mp:progress-updated", handler);
   }, [load]);
+
+  async function confirmReset() {
+    setResetting(true);
+    try {
+      const r = await fetch("/api/reset", { method: "POST" });
+      const json = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        toast(json.error ?? "Reset impossible.", { variant: "error" });
+        setResetting(false);
+        return;
+      }
+      toast("Progression réinitialisée.", { variant: "success" });
+      setConfirmOpen(false);
+      setResetting(false);
+      // Recharge la page pour repartir proprement
+      window.location.href = "/map";
+    } catch {
+      toast("Erreur réseau.", { variant: "error" });
+      setResetting(false);
+    }
+  }
 
   if (error) {
     return (
@@ -74,62 +104,75 @@ export default function MapView({ children }: { children?: React.ReactNode }) {
       </main>
     );
   }
+
   if (!me) {
     return (
-      <main className="mx-auto max-w-xl px-5 py-10 text-center">
-        <span className="dot-spin" aria-hidden />
-        <p className="mt-3 text-parchment-ink/70">Chargement de la carte…</p>
+      <main>
+        <TrailSkeleton />
       </main>
     );
   }
 
   const completedIds = me.progress.map((p) => p.stand_id);
+  const canReset = me.participant.reset_used === false;
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-6 sm:py-10">
-      <header className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-parchment-ink/60">
-            Ahoy, {me.participant.pseudo || me.participant.first_name} !
-          </p>
-          <h1 className="font-display text-2xl text-treasure-red sm:text-3xl">
-            Ta carte au trésor
-          </h1>
-        </div>
-        <div className="flex items-center gap-2">
-          {completedIds.length >= 10 && (
-            <Link href="/final" className="btn-gold">
-              <Sparkles className="h-4 w-4" /> Épreuve finale
-            </Link>
-          )}
-          <button
-            onClick={async () => {
-              // simple : clear cookie côté client n'est pas possible httpOnly,
-              // mais navigation vers /inscription suffit à recommencer.
-              toast("Pour changer d'identité, vide les cookies.", {
-                variant: "info",
-              });
-            }}
-            className="btn-ghost hidden sm:inline-flex"
-            aria-label="Se déconnecter"
-          >
-            <LogOut className="h-4 w-4" /> Quitter
-          </button>
-        </div>
-      </header>
-
-      <ProgressBar value={completedIds.length} total={10} className="mb-5" />
-
-      <TreasureMap
+    <main>
+      <TreasureTrail
+        pseudo={me.participant.pseudo || me.participant.first_name}
         stands={me.stands}
         completedStandIds={completedIds}
         nextStandId={me.nextStandId}
       />
 
-      <p className="mx-auto mt-6 max-w-prose text-center text-sm text-parchment-ink/70">
-        Clique sur la croix rouge clignotante pour découvrir l'énigme du stand en
-        cours. Les étapes suivantes se dévoilent à mesure de tes réussites.
-      </p>
+      {canReset && (
+        <section
+          className="mx-auto max-w-2xl px-4 pb-16 text-center"
+          style={{ paddingBottom: `calc(4rem + env(safe-area-inset-bottom))` }}
+        >
+          <button
+            type="button"
+            onClick={() => setConfirmOpen(true)}
+            className="inline-flex items-center gap-2 rounded-full border border-parchment-ink/20 bg-parchment-light/60 px-4 py-2 text-xs text-parchment-ink/70 transition hover:border-parchment-ink/40 hover:text-parchment-ink"
+          >
+            <RotateCcw className="h-3.5 w-3.5" aria-hidden />
+            🔄 Tu as un bug ? Recommencer la chasse
+          </button>
+        </section>
+      )}
+
+      <Dialog
+        open={confirmOpen}
+        onClose={() => (resetting ? undefined : setConfirmOpen(false))}
+        title="Recommencer la chasse ?"
+        subtitle="Cette action efface ta progression et ne peut être utilisée qu'une seule fois."
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-parchment-ink/80">
+            Es-tu sûr ? Toutes tes étapes validées et tes essais seront remis à
+            zéro. Ton compte reste le même, tu repartiras de l&apos;étape 1.
+          </p>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setConfirmOpen(false)}
+              disabled={resetting}
+            >
+              Annuler
+            </Button>
+            <Button
+              type="button"
+              variant="danger"
+              onClick={confirmReset}
+              loading={resetting}
+            >
+              <RotateCcw className="h-4 w-4" aria-hidden />
+              Confirmer le reset
+            </Button>
+          </div>
+        </div>
+      </Dialog>
 
       {children}
     </main>

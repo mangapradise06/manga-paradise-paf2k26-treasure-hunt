@@ -8,6 +8,7 @@ export interface Stand {
   character_name: string;
   anime_name: string;
   initial: string;
+  narrative_role: string | null;
   map_x: number;
   map_y: number;
 }
@@ -24,6 +25,14 @@ export interface Participant {
   completed_at: string | null;
   final_anime_guess: string | null;
   is_winner_eligible: boolean;
+  onboarding_seen: boolean;
+  reset_used: boolean;
+}
+
+export interface NarrativeOrderEntry {
+  role: string;
+  character: string;
+  letter: string;
 }
 
 export interface Progress {
